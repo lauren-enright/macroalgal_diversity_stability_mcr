@@ -8,7 +8,8 @@ library(effects)
 library(DHARMa)
 library(multcomp)
 
-#source("01b_data_prep.R")
+#Scripts starting with 03 focus on diversity/cover relationships. Need to have run script 01 to get necessary files. 
+
 source("00_functions_and_aes.R")
 
 alpha_diversity_quad_macro <- read.csv(here::here("data", "alpha_diversity_quad_macro_09262025.csv"))
