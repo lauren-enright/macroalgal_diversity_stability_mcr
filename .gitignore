@@ -2,6 +2,19 @@
 .Rhistory
 .Rapp.history
 
+#Rproj
+.Rproj.user
+.Rproj.user/
+*.Rproj
+
+.RData
+.Ruserdata
+.DS_Store
+
+data/
+*.csv
+*.xlsx
+
 # Session Data files
 .RData
 .RDataTmp
@@ -18,8 +31,6 @@
 # Output files from R CMD check
 /*.Rcheck/
 
-# RStudio files
-.Rproj.user/
 
 # produced vignettes
 vignettes/*.html
