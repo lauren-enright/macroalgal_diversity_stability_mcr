@@ -2,6 +2,9 @@
 # Functions for Manuscript 1 #
 ####
 
+###library
+library(ggplot2)
+
 # coefficient of variation
 CV<-function(x){
   return(sd(x,na.rm=T)/mean(x,na.rm=T))
