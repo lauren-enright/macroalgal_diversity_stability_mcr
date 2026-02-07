@@ -168,9 +168,9 @@ alpha_diversity_all_site_macro<-merge(alpha_diversity_site_macro,
 
 #write out csvs
 
-#write.csv(alpha_diversity_all_quad_macro, "data/alpha_diversity_quad_macro_09262025.csv", row.names = FALSE)
-#write.csv(alpha_diversity_all_site_macro, "data/alpha_diversity_site_macro_09262025.csv", row.names = FALSE)
-#write.csv(site_macro, "data/site_macro_alpha_wide_09262025.csv", row.names = FALSE)
+write.csv(alpha_diversity_all_quad_macro, "data/alpha_diversity_quad_macro_09262025.csv", row.names = FALSE)
+write.csv(alpha_diversity_all_site_macro, "data/alpha_diversity_site_macro_09262025.csv", row.names = FALSE)
+write.csv(site_macro, "data/site_macro_alpha_wide_09262025.csv", row.names = FALSE)
 
 
 
