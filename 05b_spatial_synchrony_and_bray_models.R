@@ -67,7 +67,8 @@ car::Anova(spatial_synchrony_mod2)
 #habitat           16.655  3  0.0008321 ***
 
 
-#BUT SHOULDN'T IT BE SINCE NO SIGN INTERACTION?
+#BUT SHOULDN'T IT BE SINCE NO SIGN INTERACTION? 
+# Yes, use this 
 em_spatial_synchrony_mod2 <- emmeans(spatial_synchrony_mod2, pairwise ~ habitat, type = "response")
 
 #$contrasts
@@ -83,58 +84,7 @@ cld_spatial_synchrony_mod2 <- multcomp::cld(em_spatial_synchrony_mod2, Letters =
 
 #### REGIONAL STABILITY : LOCAL STABILITY ~ SPATIAL SYNCHRONY ####
 
-#IF YOU LOG (spatial_synchrony), NOT A SIGNIFICANT INTERACTION w/ habitat..
-ratio_mod1a <- glmmTMB(ratio ~ spatial_synchrony*habitat, family = Gamma("log"), data = dss_spatial_2)
-ratio_mod1b <- glmmTMB(ratio ~ log(spatial_synchrony)*habitat, family = Gamma("log"), data = dss_spatial_2)
-hist(residuals(ratio_mod1a)) # looks good
-plot(residuals(ratio_mod1a) ~ predict(ratio_mod1a)) # looks good
-summary(ratio_mod1a)
-car::Anova(ratio_mod1a)
-performance::check_model(ratio_mod1b)
-   
-#NOAM                             Chisq Df Pr(>Chisq)    
-# spatial_synchrony         258.466  1  < 2.2e-16 ***
-# habitat                    25.584  3  1.166e-05 ***
-# spatial_synchrony:habitat  35.752  3  8.451e-08 ***
-
-#LAUREN
-#Response: ratio
-#Chisq Df Pr(>Chisq)    
-#spatial_synchrony         258.529  1  < 2.2e-16 ***
-#habitat                    25.583  3  1.166e-05 ***
-#spatial_synchrony:habitat  35.756  3  8.433e-08 ***
-
-performance::r2(ratio_mod1a) # 0.955 #matches, also DAMN
-
-#no significant interaction..
-car::Anova(ratio_mod1b)
-#Chisq Df Pr(>Chisq)    
-#log(spatial_synchrony)         983.8985  1  < 2.2e-16 ***
-#habitat                         19.7533  3  0.0001909 ***
-#log(spatial_synchrony):habitat   2.9257  3  0.4032213    
-
-emtrends(ratio_mod1a, pairwise ~ habitat, var = "spatial_synchrony") 
-#NOAM
-# Fringing - Backreef            0.205 0.445 Inf   0.461  0.9674
-# Fringing - Forereef 10m       -0.967 0.440 Inf  -2.195  0.1246
-# Fringing - Forereef 17m       -0.857 0.473 Inf  -1.812  0.2677
-# Backreef - Forereef 10m       -1.172 0.209 Inf  -5.599  <.0001
-# Backreef - Forereef 17m       -1.062 0.272 Inf  -3.912  0.0005
-# Forereef 10m - Forereef 17m    0.109 0.265 Inf   0.413  0.9762
-
-#LAUREN -- 
-#$contrasts
-#contrast                    estimate    SE  df z.ratio p.value
-#Fringing - Backreef            0.205 0.445 Inf   0.461  0.9674
-#Fringing - Forereef 10m       -0.967 0.440 Inf  -2.195  0.1246
-#Fringing - Forereef 17m       -0.857 0.473 Inf  -1.811  0.2679
-#Backreef - Forereef 10m       -1.172 0.209 Inf  -5.599  <.0001
-#Backreef - Forereef 17m       -1.062 0.272 Inf  -3.912  0.0005
-#Forereef 10m - Forereef 17m    0.110 0.265 Inf   0.414  0.9761
-
-# actually, we don't want to consider habitat, so rerunning model... 
-
-#this is not logged
+#run model, without logging response 
 ratio_mod2 <- glmmTMB(ratio ~ spatial_synchrony, family = Gamma("log"), data = dss_spatial_2)
 
 hist(residuals(ratio_mod2)) # THIS LOOKS WEIRD?
@@ -146,6 +96,7 @@ car::Anova(ratio_mod2)
 #Chisq Df Pr(>Chisq)    
 #spatial_synchrony   126  1  < 2.2e-16 ***
 
+#log to improve residuals
 #this is logged - GOING TO USE THIS MODEL
 ratio_mod3 <- glmmTMB(ratio ~ log(spatial_synchrony), family = Gamma("log"), data = dss_spatial_2)
 
@@ -160,73 +111,9 @@ car::Anova(ratio_mod3)
 
 performance::r2(ratio_mod3)  #0.97
 
-#this is not logged - reversed ratio
-ratio_mod4 <- glmmTMB(ratio_reversed ~ spatial_synchrony, family = Gamma("log"), data = dss_spatial_2)
-
-hist(residuals(ratio_mod4)) # THIS LOOKS WEIRD?
-plot(residuals(ratio_mod4) ~ predict(ratio_mod4)) # looks fine I think?
-summary(ratio_mod4)
-car::Anova(ratio_mod4)
-#                  Chisq Df Pr(>Chisq)    
-#spatial_synchrony 96.93  1  < 2.2e-16 ***
-# ---
-
-#with habitat
-ratio_mod5 <- glmmTMB(ratio_reversed ~ spatial_synchrony*habitat, family = Gamma("log"), data = dss_spatial_2)
-
-hist(residuals(ratio_mod5)) # THIS LOOKS WEIRD?
-plot(residuals(ratio_mod5) ~ predict(ratio_mod5)) # looks fine I think?
-summary(ratio_mod5)
-car::Anova(ratio_mod5)
-performance::r2(ratio_mod5)
-
-#Chisq Df Pr(>Chisq)    
-#spatial_synchrony         226.574  1  < 2.2e-16 ***
-#  habitat                    23.516  3  3.152e-05 ***
-#  spatial_synchrony:habitat  32.783  3  3.578e-07 ***
-
-#with habitat - logged
-ratio_mod6 <- glmmTMB(ratio_reversed ~ log(spatial_synchrony)*habitat, family = Gamma("log"), data = dss_spatial_2)
-
-hist(residuals(ratio_mod6)) # THIS LOOKS WEIRD?
-plot(residuals(ratio_mod6) ~ predict(ratio_mod6)) # looks fine I think?
-summary(ratio_mod6)
-car::Anova(ratio_mod6)
-performance::r2(ratio_mod6)
-
-#Chisq Df Pr(>Chisq)    
-#log(spatial_synchrony)         953.8486  1  < 2.2e-16 ***
-# habitat                         19.7816  3  0.0001884 ***
-# log(spatial_synchrony):habitat   2.7373  3  0.4339214  
 
 #### SPATIAL SYNCHRONY ~ BRAY ####
-bray_mod <- glmmTMB(spatial_synchrony ~ mean_bray*habitat, family = beta_family(), data = beta_spatialsync)
-hist(residuals(bray_mod)) # looks good
-plot(residuals(bray_mod) ~ predict(bray_mod)) # looks good
-summary(bray_mod)
-car::Anova(bray_mod) 
 
-#Response: spatial_synchrony
-#Chisq Df Pr(>Chisq)    
-#mean_bray         14.020  1  0.0001809 ***
-#habitat           11.792  3  0.0081300 ** 
-#mean_bray:habitat 16.737  3  0.0008003 ***
-
-performance::r2(bray_mod) # 0.743 #this matches
-
-#NOAM
-emtrends(bray_mod, pairwise ~ habitat, var = "mean_bray") 
-
-#$contrasts
-#contrast                    estimate   SE  df z.ratio p.value
-#Fringing - Backreef            4.376 1.98 Inf   2.211  0.1201
-#Fringing - Forereef 10m        4.088 1.93 Inf   2.114  0.1485
-#Fringing - Forereef 17m       -4.569 2.33 Inf  -1.957  0.2043
-#Backreef - Forereef 10m       -0.288 2.21 Inf  -0.130  0.9992
-#Backreef - Forereef 17m       -8.945 2.57 Inf  -3.486  0.0028
-#Forereef 10m - Forereef 17m   -8.657 2.53 Inf  -3.420  0.0035
-
-# but actually we are going to show without habitat so..
 bray_mod2 <- glmmTMB(spatial_synchrony ~ mean_bray, family = beta_family(), data = beta_spatialsync)
 hist(residuals(bray_mod2)) # looks fine
 plot(residuals(bray_mod2) ~ predict(bray_mod2)) # looks good
@@ -237,7 +124,6 @@ car::Anova(bray_mod2)
 #mean_bray 13.832  1  0.0001999 ***
 
 performance::r2(bray_mod2) # 0.40 --> this got way worse.. 
-
 
 
 #pull out data from models to make supplemental figures:

@@ -8,7 +8,6 @@
 ## S4 --> in script 04c
 ## S5 --> in script 04e
 ## S6 --> in script 05c
-## S7 --> in script 05c 
 
 library(tidyverse)
 library(codyn)

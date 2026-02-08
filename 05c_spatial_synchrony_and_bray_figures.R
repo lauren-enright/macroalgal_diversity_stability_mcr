@@ -65,18 +65,11 @@ filtered_spat_stab_effects$habitat <- factor(filtered_spat_stab_effects$habitat,
     ylim(c(0.5,5.5))
 )
 
-#LOOKS DIFFERENT THAN OLD VERISON BC NO INTERACTION 
+#LOOKS DIFFERENT THAN OLD VERISON OF PLOT BC NO SIGN INTERACTION BT SPATIAL SYN AND HAB
 
 
 #### REGIONAL STABILITY : LOCAL STABILITY ~ SPATIAL SYNCHRONY ####
 # SETUP
-
-#using if model is by habitat
-#ratio_emm <- emmip(ratio_mod,
-                   #    habitat ~ spatial_synchrony,
-                    #   at = list(spatial_synchrony = seq(0,1,0.01)), plotit = F, CIs = T) 
-
-#filtered_ratio_effects <- filter_ranges(ratio_emm, dss_spatial_ranges, "habitat", "spatial_synchrony")
 
 # using for model not by habitat
 #using ratio mod 3
@@ -88,22 +81,6 @@ rng_ratio <- range(dss_spatial_2$spatial_synchrony, na.rm = TRUE)
 ratio_emm2_filterered <- ratio_emm2 %>% filter(spatial_synchrony >= rng_ratio [1], spatial_synchrony <= rng_ratio [2])
 
 
-
-# PLOT - With habitat model
-#(ratio_plot <- 
- #   ggplot() +
-  #  geom_point(data = dss_spatial_2,
-  #             aes(x = spatial_synchrony, y = ratio, colour = habitat), size = 1, alpha = 0.5) + 
-  #  geom_line(data = filtered_ratio_effects, aes(x = spatial_synchrony, y = exp(yvar), colour = habitat), size = 1.5) +
-  #  geom_ribbon(data = filtered_ratio_effects, aes(x = spatial_synchrony, ymin = exp(LCL), ymax = exp(UCL), fill = habitat),
-  #              alpha = 0.3) +
-  #  scale_colour_manual(values = habitat_colours) +
-  #  scale_fill_manual(values = habitat_colours) +
-  #  labs(y = "", x = "Spatial synchrony", title = "") +
-  #  ylab(expression(frac(Site-level~stability, Mean~plot-level~stability))) +
-#    scale_y_continuous(limits = c(0.5, 4.2), breaks = c(1,2,3,4)) +
-  #  model_themes
-#)
 
 # PLOT - without habitat model
 #with model 3
@@ -125,35 +102,9 @@ ratio_emm2_filterered <- ratio_emm2 %>% filter(spatial_synchrony >= rng_ratio [1
     model_themes
 )
 
-### Plot - with reversed ratio
-
-(ratio_plot3 <- 
-    ggplot() +
-    geom_point(data = dss_spatial_2,
-               aes(x = spatial_synchrony, y = ratio_reversed), size = 3, alpha = 0.5) + 
-    geom_smooth(method = "loess") +
-    geom_line(data = ratio_emm2_filterered, aes(x = spatial_synchrony, y = exp(yvar)), size = 1.5) +
-    geom_ribbon(data = ratio_emm2_filterered, aes(x = spatial_synchrony, ymin = exp(LCL), ymax = exp(UCL)),
-                alpha = 0.3) +
-    geom_hline(yintercept = 1, linetype = "dashed", color = "black") +
-    #scale_colour_manual(values = habitat_colours) +
-    #scale_fill_manual(values = habitat_colours) +
-    labs(y = "", x = "Spatial synchrony", title = "") +
-    ylab("Site-level stability\n────────────\nMean plot-level stability") +
-    #ylab(expression(frac(Site-level~stability, Mean~plot-level~stability))) +
-    #   scale_y_continuous(limits = c(0.5, 4.2), breaks = c(1,2,3,4)) +
-    model_themes
-)
 
 #### SPATIAL SYNCHRONY ~ BRAY ####
 # SETUP
-#if using model with habitats
-#bray_emm <- emmip(bray_mod,
- #                  habitat ~ mean_bray,
-#                   at = list(mean_bray = seq(0,1,0.01)), plotit = F, CIs = T)  
-
-
-#filtered_bray_effects <- filter_ranges(bray_emm, beta_ranges, "habitat", "mean_bray")
 
 #if using model w/o habitat
 bray_emm2 <- emmip(bray_mod2,
@@ -165,22 +116,6 @@ bray_emm2 <- emmip(bray_mod2,
 rng_bray <- range(beta_spatialsync$mean_bray, na.rm = TRUE)
 bray_emm2_filterered <- bray_emm2 %>% filter(mean_bray >= rng_bray[1], mean_bray <= rng_bray[2])
 
-
-
-# PLOT - w/ habitat model 
-#(bray_plot <- 
-  #  ggplot() +
-  #  geom_point(data = beta_spatialsync,
-  #             aes(x = mean_bray, y = spatial_synchrony, colour = habitat), size = 1, alpha = 0.5) + 
-  #  geom_line(data = filtered_bray_effects, aes(x = mean_bray, y = inv_logit(yvar), colour = habitat), size = 1.5) +
-  #  geom_ribbon(data = filtered_bray_effects, aes(x = mean_bray, ymin = inv_logit(LCL), ymax = inv_logit(UCL), fill = habitat),
-  #               alpha = 0.3) +
-  #  scale_colour_manual(values = habitat_colours) +
-  #  scale_fill_manual(values = habitat_colours) +
-  #  labs(y = "Spatial synchrony", x = "Mean Bray dissimilarity", title = "") +
- #   scale_y_continuous(limits = c(0.5, 4.2), breaks = c(1,2,3,4)) +
- #   model_themes
-#)
 
 # plot without habitat model
 
@@ -270,25 +205,3 @@ supplement_S6 <- s6.a + s6.b +
 
 #ggsave(filename = "output/Supp_FigS6_121625.jpg", supplement_S6, height = 10, width = 20)
 
-#### Figure S7: Box Plots of Spatial Synchrony by Habitat ####
-
-#clean up data for plotting purposes and plot
-
-supplement_S7 <- dss_spatial_2 %>%
-  ggplot(aes(x = habitat, y = spatial_synchrony, color = habitat)) +
-  geom_boxplot() +
-  geom_point(shape = 1, size = 3.5) +
-  scale_colour_manual(values = habitat_colours,labels = habitat_labels) +
-  #scale_fill_manual(values = habitat_colours, labels = habitat_labels) +
-  labs(y = "Spatial synchrony", x = "", title = "") +
-  scale_x_discrete(labels = c(
-    "Forereef 17m" = "Fore reef 17 m",
-    "Forereef 10m" = "Fore reef 10 m",
-    "Backreef"     = "Back reef",
-    "Fringing"     = "Fringing reef")) +
-  #    scale_y_continuous(limits = c(0.5, 4.2), breaks = c(1,2,3,4)) +
-  model_themes 
-
-supplement_S7
-
-#ggsave(filename = "output/Supp_FigS7_12102025.jpg", supplement_S7, height = 10, width = 15)
