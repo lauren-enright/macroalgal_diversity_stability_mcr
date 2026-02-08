@@ -7,6 +7,7 @@ library(car)
 library(effects)
 library(DHARMa)
 library(multcomp)
+library(multcompView)
 
 #Scripts starting with 03 focus on diversity/cover relationships. Need to have run script 01 to get necessary files. 
 
@@ -46,7 +47,7 @@ em_cover_mod <- emtrends(cover_mod, pairwise ~ habitat, var = "richness") # back
 #Backreef - Forereef 17m      0.04232 0.0214 Inf   1.979  0.1957
 #Forereef 10m - Forereef 17m  0.04088 0.0209 Inf   1.952  0.2063
 
-cld_cover_mod <- multcomp::cld(em_cover_mod, Letters = letters, sort = FALSE)
+cld_cover_mod <- multcomp::cld(em_cover_mod$emtrends, Letters = letters, sort = FALSE)
 
 #### COVER ~ FUNCTIONAL RICHNESS ####
 #check number of functional richness categories
@@ -54,15 +55,8 @@ unique(alpha_diversity_quad_macro$functional_richness)
 
 cover_mod_fg <- glmmTMB(cover_trans ~ functional_richness*habitat + (1|site/location) + (1|year), family = beta_family(), data = alpha_diversity_quad_macro)
 
-
 summary(cover_mod_fg)
 car::Anova(cover_mod_fg)
-
-#Lauren - old, mistake, with 9 functional groups
-#Chisq Df Pr(>Chisq)    
-#functional_richness         31722.867  1  < 2.2e-16 ***
-#habitat                        48.585  3  1.598e-10 ***
-#functional_richness:habitat   455.808  3  < 2.2e-16 ***
 
 #NEW - with 8 functional groups
 #functional_richness         31789.564  1  < 2.2e-16 ***
@@ -70,18 +64,10 @@ car::Anova(cover_mod_fg)
 # functional_richness:habitat   457.578  3  < 2.2e-16 ***
 
 hist(residuals(cover_mod_fg)) # good
-performance::r2(cover_mod_fg) # Noam: margingal = 0.63, conditional = 0.65 #Lauren = same --> these are the same for 8 fg:)
+performance::r2(cover_mod_fg) # marginal = 0.63, conditional = 0.65 
 em_cover_mod_fg <- emtrends(cover_mod_fg, pairwise ~ habitat, var = "functional_richness") 
 
-#contrast                    estimate     SE  df z.ratio p.value
-#Fringing - Backreef            0.225 0.0265 Inf   8.500  <.0001
-#Fringing - Forereef 10m        0.357 0.0261 Inf  13.701  <.0001
-#Fringing - Forereef 17m        0.536 0.0262 Inf  20.499  <.0001
-#Backreef - Forereef 10m        0.132 0.0231 Inf   5.697  <.0001
-#Backreef - Forereef 17m        0.311 0.0231 Inf  13.435  <.0001
-#Forereef 10m - Forereef 17m    0.179 0.0223 Inf   8.061  <.0001
-
-#new - 8 functional groups, only small changes! 
+#new - 8 functional groups
 #$contrasts
 #contrast                    estimate     SE  df z.ratio p.value
 #Fringing - Backreef            0.223 0.0265 Inf   8.404  <.0001
@@ -91,19 +77,19 @@ em_cover_mod_fg <- emtrends(cover_mod_fg, pairwise ~ habitat, var = "functional_
 #Backreef - Forereef 17m        0.314 0.0231 Inf  13.562  <.0001
 #Forereef 10m - Forereef 17m    0.180 0.0223 Inf   8.067  <.0001
 
-cld_cover_mod_fg <- multcomp::cld(em_cover_mod_fg, Letters = letters, sort = FALSE)
+cld_cover_mod_fg <- multcomp::cld(em_cover_mod_fg$emtrends, Letters = letters, sort = FALSE)
 
 #pull out data from models to make supplemental figures:
 
 #richness by cover
-t.s2.a <- as.tibble(cld_cover_mod) %>%
+t.s2.a <- as_tibble(cld_cover_mod) %>%
   mutate(Predictor = "Taxonomic richness",
          `Spatial scale` = "Plot-level") %>% 
   # rename this so it matches for joining purposes
   rename_if(str_detect(names(.), ".trend"), ~"Mean")
 #functional richness by cover
 
-t.s2.b <-  as.tibble(cld_cover_mod_fg) %>%
+t.s2.b <-  as_tibble(cld_cover_mod_fg) %>%
   mutate(Predictor = "Functional richness",
          `Spatial scale` = "Plot-level") %>% 
   rename_if(str_detect(names(.), ".trend"), ~"Mean")
