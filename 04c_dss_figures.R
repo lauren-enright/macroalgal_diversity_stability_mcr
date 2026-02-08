@@ -24,6 +24,7 @@ diversity_stability_synchrony %>% filter(is.na(cover_stability))
 ## NOAM --> is it right that there were only 16 quads through time that don't have any algae cover?
 #Warrning message:
 #Removed 16 rows containing missing values or values outside the scale range (`geom_point()`) --> these are NAs in the stability column
+#yes, due to few quads that never had MA cover --> can't measure stability of MA if there is no MA
 
 # PLOT
 (figure_3a <- 

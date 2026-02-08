@@ -58,12 +58,6 @@ rich_stab_mod_fg <- glmmTMB(cover_stability ~ functional_richness_mean*habitat +
 summary(rich_stab_mod_fg)
 car::Anova(rich_stab_mod_fg)
 
-#                                    Chisq Df Pr(>Chisq)    
-  
-#functional_richness_mean         3099.815  1  < 2.2e-16 ***
-#habitat                           120.580  3  < 2.2e-16 ***
-#functional_richness_mean:habitat   25.078  3  1.487e-05 ***
-
 #new, with 8 functional groups
 
 #Chisq Df Pr(>Chisq)    
@@ -73,18 +67,10 @@ car::Anova(rich_stab_mod_fg)
 
 hist(residuals(rich_stab_mod_fg)) # looks fine
 plot(residuals(rich_stab_mod_fg) ~ fitted(rich_stab_mod_fg)) # same as usual 
-performance::r2(rich_stab_mod_fg) # marginal: 0.823, conditional: 0.832, matches 
+performance::r2(rich_stab_mod_fg) 
 #new for 8 functional groups: #Conditional R2: 0.833, Marginal R2: 0.824
 em_rich_stab_mod_fg <- emtrends(rich_stab_mod_fg, pairwise ~ habitat, var = "functional_richness_mean") 
 #  fringing different from all others
-
-#contrast                    estimate     SE  df z.ratio p.value
-#Fringing - Backreef           0.1829 0.0466 Inf   3.921  0.0005
-#Fringing - Forereef 10m       0.2337 0.0517 Inf   4.520  <.0001
-#Fringing - Forereef 17m       0.1981 0.0488 Inf   4.058  0.0003
-#Backreef - Forereef 10m       0.0508 0.0471 Inf   1.079  0.7024
-#Backreef - Forereef 17m       0.0152 0.0439 Inf   0.346  0.9858
-#Forereef 10m - Forereef 17m  -0.0356 0.0475 Inf  -0.750  0.8767
 
 #new, with 8 functional groups
 #$contrasts

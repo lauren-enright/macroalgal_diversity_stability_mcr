@@ -8,8 +8,6 @@ library(effects)
 library(DHARMa)
 library(codyn)
 
-#source("01b_data_prep.R")
-
 #want to have appropriate functions and plot themes
 source("00_functions_and_aes.R")
 
