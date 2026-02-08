@@ -33,7 +33,19 @@ taxa_sum_check  %>%
 #okay, there are 16 quads that never have macroalgal in them across all years. 
 # this means 16 quads are dropped in our models with stability, as you cannot model the stability of 0.
 # quads with 0s are included in the cover data.
-  
+
+#how many taxa in each habitat?  
+macro_functional_groups_long %>%
+  filter(prop_cover > 0) %>%
+  group_by(habitat) %>%
+  summarise(n_taxa = n_distinct(taxa), .groups = "drop")
+
+#habitat      n_taxa
+#<chr>         <int>
+#  1 Backreef         49
+#2 Forereef 10m     28
+#3 Forereef 17m     28
+#4 Fringing         43
 
 #wide data at taxonomic level
 macro_taxa_groups_wide_taxonomic <- macro_functional_groups_long %>%
