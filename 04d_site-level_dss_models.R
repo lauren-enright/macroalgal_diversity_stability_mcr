@@ -52,12 +52,6 @@ summary(rich_stab_mod_site_fg)
 car::Anova(rich_stab_mod_site_fg)
 
 
-#Response: cover_stability
-#Chisq Df Pr(>Chisq)   
-#functional_richness_mean          1.6373  1   0.200691   
-#habitat                          13.8071  3   0.003180 **
-#functional_richness_mean:habitat 12.8182  3   0.005047 **
-
 #new, with 8 functional groups
 #Chisq Df Pr(>Chisq)   
 #functional_richness_mean          1.5896  1   0.207387   
@@ -66,18 +60,9 @@ car::Anova(rich_stab_mod_site_fg)
 
 hist(residuals(rich_stab_mod_site_fg)) # blocky but fine
 plot(residuals(rich_stab_mod_site_fg) ~ fitted(rich_stab_mod_site_fg)) # fine
-performance::r2(rich_stab_mod_site_fg) #   Nagelkerke's R2: 0.59 - OLD, new 8 functional groups:  Nagelkerke's R2: 0.584
+performance::r2(rich_stab_mod_site_fg) # new 8 functional groups:  Nagelkerke's R2: 0.584
 em_rich_stab_mod_site_fg <- emtrends(rich_stab_mod_site_fg, pairwise ~ habitat, var = "functional_richness_mean") 
 # Fringing different from outer 10
-
-#contrast                    estimate    SE  df z.ratio p.value
-#Fringing - Backreef            0.281 0.321 Inf   0.874  0.8185
-#Fringing - Forereef 10m        1.285 0.416 Inf   3.087  0.0109
-#Fringing - Forereef 17m        0.834 0.383 Inf   2.176  0.1299
-#Backreef - Forereef 10m        1.005 0.487 Inf   2.065  0.1648
-#Backreef - Forereef 17m        0.553 0.459 Inf   1.206  0.6230
-#Forereef 10m - Forereef 17m   -0.452 0.530 Inf  -0.853  0.8289
-
 #new, with 8 functional groups
 
 #contrasts
@@ -102,7 +87,6 @@ car::Anova(synch_stab_mod_site)
 # synchrony:habitat 10.534  3    0.01453 *   
 hist(residuals(synch_stab_mod_site)) # almost uniform
 plot(residuals(synch_stab_mod_site) ~ fitted(synch_stab_mod_site)) # same issue as always
-#r.squaredGLMM(synch_stab_mod_site) # 0.678
 performance::r2(synch_stab_mod_site) # 0.702
 em_synch_stab_mod_site <- emtrends(synch_stab_mod_site, pairwise ~ habitat, var = "synchrony") # backreef is different from forereef 17, fringing is a p = 0.05
 
