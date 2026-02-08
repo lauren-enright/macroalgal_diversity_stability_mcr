@@ -8,8 +8,6 @@ library(codyn)
 
 source("05a_calculate_spatial_synchrony_and_bray.R")
 
-#read in data 
-#dss_spatial_2 <- read.csv(here::here("data", "spatial_synchrony_09172025.csv")) 
 
 #remind r of the correct order 
 #want habitats to be in order.
@@ -29,7 +27,6 @@ performance::r2(alpha_gamma_stab_mod) # 0.838 #matches
   
 em_alpha_gamma_stab_mod <- emtrends(alpha_gamma_stab_mod, pairwise ~ habitat, var = "stability_mean") # backreef different from fringe and forereef 10
 
-#NOAM
 # $contrasts
 #  contrast                    estimate    SE  df z.ratio p.value
 #   Fringing - Backreef            1.078 0.381 Inf   2.828  0.0242
@@ -69,15 +66,6 @@ car::Anova(spatial_synchrony_mod2)
 #spatial_synchrony 11.483  1  0.0007024 ***
 #habitat           16.655  3  0.0008321 ***
 
-#NOAM OG CODE - won't work if we're not going interaction anymore
-emtrends(spatial_synchrony_mod2, pairwise ~ habitat, var = "spatial_synchrony") # no sig differences but close
-# contrast                    estimate    SE  df z.ratio p.value
-# Fringing - Backreef            0.404 1.764 Inf   0.229  0.9958
-# Fringing - Forereef 10m        1.365 1.754 Inf   0.778  0.8643
-# Fringing - Forereef 17m        3.112 1.882 Inf   1.654  0.3484
-# Backreef - Forereef 10m        0.961 0.857 Inf   1.121  0.6766
-# Backreef - Forereef 17m        2.708 1.095 Inf   2.472  0.0643
-# Forereef 10m - Forereef 17m    1.747 1.078 Inf   1.621  0.3667
 
 #BUT SHOULDN'T IT BE SINCE NO SIGN INTERACTION?
 em_spatial_synchrony_mod2 <- emmeans(spatial_synchrony_mod2, pairwise ~ habitat, type = "response")
