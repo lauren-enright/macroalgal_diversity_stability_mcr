@@ -100,4 +100,4 @@ plot_list <- lapply(levels(figure_1_data$habitat), function(hab) {
                        font.label = list(size = 24, color = "black", face = "plain")))
 
 
-#ggsave(filename = "output/figure1_v6_11212025.jpg", figure_1, height = 10, width = 14)
+#ggsave(filename = "figures/figure1_v7_02162026.jpg", figure_1, height = 10, width = 14)
