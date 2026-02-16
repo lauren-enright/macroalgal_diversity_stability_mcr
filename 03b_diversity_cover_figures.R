@@ -35,7 +35,7 @@ filtered_cover_effects <- filter_ranges(trend = cover_emm, range_obj = diversity
                 alpha = 0.5) +
     scale_colour_manual(values = habitat_colours, labels = habitat_labels) +
     scale_fill_manual(values = habitat_colours, labels = habitat_labels) +
-    labs(y = "Cover\n", x = "Taxonomic richness", title = "") +
+    labs(y = "Cover\n", x = "Taxonomic richness", title = "a.") +
     model_themes 
 )
 
@@ -57,21 +57,31 @@ filtered_cover_effects_fg <- filter_ranges(cover_emm_fg, diversity_ranges_quad, 
                 alpha = 0.5) +
     scale_colour_manual(values = habitat_colours, labels = habitat_labels) +
     scale_fill_manual(values = habitat_colours, labels = habitat_labels) +
-    labs(y = "", x = "Functional richness", title = "") +
+    labs(y = "", x = "Functional richness", title = "b.") +
     model_themes
 )
 #ggsave(filename = "output/figure_3b_quad_v2.png", figure_3b, height = 10, width = 14)
 
 #### PANEL GRAPH ####
 
-(figure_2 <- ggarrange(figure_2a, figure_2b,  
+pfigure_2a <- figure_2a + theme(plot.margin = margin(10, 10, 10, 10))
+pfigure_2b <- figure_2b + theme(plot.margin = margin(10, 10, 10, 10))
+
+(figure_2 <- ggarrange(pfigure_2a, pfigure_2b,  
                        ncol = 2, nrow = 1, 
                        common.legend = TRUE,
                        labels = c("a.", "b."),
+                       label.x = 0.02,   # left padding (0 = hard left, 1 = hard right)
+                       label.y = 0.98,   # top padding (0 = bottom, 1 = top)
+                       hjust = 0, vjust = 1,
                        legend = "bottom", 
                        font.label = list(size = 26, color = "black", face = "plain")) )
 
-#ggsave(filename = "output/figure2_11212024.jpg", figure_2, height = 8, width = 16)
+figure2_attempt2 <- pfigure_2a + pfigure_2b +  plot_layout(guides = "collect") &          # collect legends into one
+  theme(legend.position = "bottom")  
+
+#this ended up being figure 3 in the MS, so saving it as so... 
+#ggsave(filename = "figures/figure3_02152026_v2.jpg", figure2_attempt2, height = 8, width = 16)
 
 #adding supplemental figures
 
@@ -91,10 +101,10 @@ supplemental_tables_tableS2_plot %>%
   # add confidence intervals:
   geom_linerange(aes(xmin = Lower_CI, xmax = Upper_CI), linewidth = 3) +
   scale_colour_manual(values = habitat_colours, label = habitat_labels) +
-  xlab("Coefficient") +
+  xlab("Estimated slope") +
   geom_vline(xintercept = 0, linetype = "dashed", linewidth = 1, color = "gray") +
   ylab("") +
-  ggtitle("a. Taxonomic Richness") +
+  ggtitle("a. Taxonomic richness") +
   model_themes + 
   # add letters denoting significance
   geom_text(aes(x = Upper_CI + 0.10 , y = Habitat, 
@@ -117,10 +127,10 @@ supplemental_tables_tableS2_plot %>%
   # add confidence intervals:
   geom_linerange(aes(xmin = Lower_CI, xmax = Upper_CI), linewidth = 3) +
   scale_color_manual(values = habitat_colours, label = habitat_labels) +
-  xlab("Coefficient") +
+  xlab("Estimated slope") +
   geom_vline(xintercept = 0, linetype = "dashed", linewidth = 1, color = "gray") +
   ylab("") +
-  ggtitle("b. Functional Richness") +
+  ggtitle("b. Functional richness") +
   scale_y_discrete(labels = c(
     "Fringing" = "Fringing reef",
     "Backreef" = "Back reef",
@@ -137,6 +147,6 @@ supplemental_tables_tableS2_plot %>%
 s2_figure <- s2.taxo + s2.functional +  plot_layout(guides = "collect") &          # collect legends into one
   theme(legend.position = "bottom")  
 
-#ggsave(filename = "output/Supp_FigS2_121625.jpg", s2_figure, height = 10, width = 22)
+ggsave(filename = "figures/Supp_FigS2_02162026.jpg", s2_figure, height = 10, width = 22)
 
 

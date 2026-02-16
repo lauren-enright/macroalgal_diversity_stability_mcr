@@ -41,7 +41,7 @@ filtered_site_cover_effects$habitat <- factor(filtered_site_cover_effects$habita
                alpha = 0.3) +
    scale_colour_manual(values = habitat_colours, labels = habitat_labels) +
    scale_fill_manual(values = habitat_colours, labels = habitat_labels) +
-   labs(y = "Cover\n", x = "Taxonomic Richness", title = "") +
+   labs(y = "Cover\n", x = "Taxonomic richness", title = "") +
    scale_y_continuous(
      limits = c(0, 0.4),               # force axis range
      breaks = c(0, 0.2, 0.4)) + 
@@ -78,7 +78,7 @@ filtered_site_fg_cover_effects$habitat <- factor(filtered_site_fg_cover_effects$
                 alpha = 0.3) +
     scale_colour_manual(values = habitat_colours) +
     scale_fill_manual(values = habitat_colours) +
-    labs(y = "", x = "Functional Richness", title = "") +
+    labs(y = "", x = "Functional richness", title = "") +
    scale_y_continuous(
      limits = c(0, 0.4),               # force axis range
      breaks = c(0, 0.2, 0.4)) + 
@@ -94,6 +94,6 @@ filtered_site_fg_cover_effects$habitat <- factor(filtered_site_fg_cover_effects$
                        legend = "bottom", 
                        font.label = list(size = 26, color = "black", face = "plain")))
 
-#ggsave(filename = "output/Supp_FigS3_12162025.jpg", figure_S3, height = 10, width = 18)
+ggsave(filename = "figures/Supp_FigS3_02162026.jpg", figure_S3, height = 10, width = 18)
 
 

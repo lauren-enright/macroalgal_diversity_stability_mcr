@@ -99,5 +99,5 @@ plot_list <- lapply(levels(figure_1_data$habitat), function(hab) {
                        legend = "bottom", 
                        font.label = list(size = 24, color = "black", face = "plain")))
 
-
-#ggsave(filename = "figures/figure1_v7_02162026.jpg", figure_1, height = 10, width = 14)
+#this ended up being figure 2 in the MS, so saving it as so... 
+#ggsave(filename = "figures/figure2_v7_02162026.jpg", figure_1, height = 10, width = 14)
