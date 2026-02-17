@@ -21,6 +21,7 @@ filtered_ag_effects <- filter_ranges(alpha_gamma_emm, dss_spatial_ranges, "habit
 filtered_ag_effects$habitat <- factor(filtered_ag_effects$habitat,
                                 levels = c("Fringing", "Backreef", "Forereef 10m", "Forereef 17m"))
 
+
 # PLOT
 (alpha_gamma_stability_plot <- 
     ggplot() +
@@ -29,8 +30,10 @@ filtered_ag_effects$habitat <- factor(filtered_ag_effects$habitat,
     geom_line(data = filtered_ag_effects, aes(x = stability_mean, y = exp(yvar), colour = habitat), linewidth = 1.5) +
     geom_ribbon(data = filtered_ag_effects, aes(x = stability_mean, ymin = exp(LCL), ymax = exp(UCL), fill = habitat),
                 alpha = 0.3) +
-    scale_colour_manual(values = habitat_colours,labels = habitat_labels) +
-    scale_fill_manual(values = habitat_colours, labels = habitat_labels) +
+   # scale_colour_manual(values = hab_cols_new, labels = habitat_labels_new, breaks = names(habitat_labels_new)) +
+  #  scale_fill_manual(values = hab_cols_new, labels = habitat_labels_new, breaks = names(habitat_labels_new)) +
+   scale_colour_manual(values = habitat_colours,labels = habitat_labels) +
+   scale_fill_manual(values = habitat_colours, labels = habitat_labels) +
     labs(y = "Site-level stability", x = "Mean plot-level stability", title = "") +
 #    scale_y_continuous(limits = c(0.5, 4.2), breaks = c(1,2,3,4)) +
     model_themes +
@@ -135,15 +138,17 @@ bray_emm2_filterered <- bray_emm2 %>% filter(mean_bray >= rng_bray[1], mean_bray
 )
 
 
+
+
 #### PANEL GRAPH ####
-(figure_4 <- ggarrange(alpha_gamma_stability_plot, spatial_synchrony_plot, ratio_plot3, bray_plot,
+(figure_5 <- ggarrange(alpha_gamma_stability_plot, spatial_synchrony_plot, ratio_plot3, bray_plot,
                        ncol = 2, nrow = 2, 
                        common.legend = TRUE,
                        legend = "bottom", 
                        labels = c("a.", "b.", "c.", "d."),
                        font.label = list(size = 26, color = "black", face = "plain")))
 
-#ggsave(filename = "output/figure4_09252025.jpg", figure_4, height = 18, width = 18)
+ggsave(filename = "figures/figure5_02162026.jpg", figure_5, height = 18, width = 18)
 
 
 #### Figure S6: #####
@@ -158,7 +163,7 @@ supplemental_tableS6 %>%
   # add confidence intervals:
   geom_linerange(aes(xmin = Lower_CI, xmax = Upper_CI), linewidth = 2.5) +
   scale_colour_manual(values = habitat_colours, label = habitat_labels) +
-  xlab("Coefficient") +
+  xlab("Estimated slope") +
   ylab("") +
   ggtitle("a. Mean plot-level stability") +
   model_themes + 
@@ -184,7 +189,7 @@ supplemental_tableS6 %>%
   # add confidence intervals:
   geom_linerange(aes(xmin = Lower_CI, xmax = Upper_CI), linewidth = 2.5) +
   scale_colour_manual(values = habitat_colours, label = habitat_labels) +
-  xlab("Coefficient") +
+  xlab("Estimated slope") +
   ylab("") +
   ggtitle("b. Spatial synchrony") +
   model_themes + 
@@ -203,5 +208,5 @@ supplement_S6 <- s6.a + s6.b +
   plot_layout(guides = "collect") &
   theme(legend.position = "bottom")
 
-#ggsave(filename = "output/Supp_FigS6_121625.jpg", supplement_S6, height = 10, width = 20)
+ggsave(filename = "figures/Supp_FigS6_02162026.jpg", supplement_S6, height = 10, width = 20)
 

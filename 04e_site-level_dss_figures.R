@@ -113,7 +113,7 @@ supplemental_tables_tableS5_plot %>%
   scale_colour_manual(values = habitat_colours) +
   # if you want the 0 reference:
   geom_vline(xintercept = 0, linetype = "dashed", linewidth = 1, color = "gray") +
-  xlab("Coefficients of site-level\n taxonomic richness") +
+  xlab("Estimated slope: site-level\n taxonomic richness") +
   ylab("") +
   ggtitle("") +
   model_themes + 
@@ -146,7 +146,7 @@ supplemental_tables_tableS5_plot %>%
   scale_colour_manual(values = habitat_colours) +
   # if you want the 0 reference:
   geom_vline(xintercept = 0, linetype = "dashed", linewidth = 1, color = "gray") +
-  xlab("Coefficients of site-level\n functional richness") +
+  xlab("Estimated slope: site-level\n functional richness") +
   ylab("") +
   ggtitle("") +
   model_themes + 
@@ -179,7 +179,7 @@ supplemental_tables_tableS5_plot  %>%
   scale_colour_manual(values = habitat_colours) +
   # if you want the 0 reference:
   geom_vline(xintercept = 0, linetype = "dashed", linewidth = 1, color = "gray") +
-  xlab("Coefficients of site-level\n species synchrony") +
+  xlab("Estimated slope: site-level\n species synchrony") +
   ylab("") +
   ggtitle("") +
   model_themes + 
@@ -221,6 +221,6 @@ supplemental_tables_tableS5_plot  %>%
                                    font.label = list(size = 26, color = "black", face = "plain")))
 
 #ggsave(filename = "output/Supp_FigS5_12162025_v3.jpg", supplement5_site_dss, height = 30, width = 25)
-ggsave(filename = "output/Supp_FigS5_12162025_v5.jpg", supplement5_site_dss_v2, height = 30, width = 25)
+#ggsave(filename = "figures/Supp_FigS5_02162026_v6.jpg", supplement5_site_dss_v2, height = 30, width = 25)
 #options: 22 and 18
 #options: 22 and 30 

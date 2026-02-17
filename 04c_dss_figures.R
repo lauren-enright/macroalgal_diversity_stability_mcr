@@ -27,7 +27,7 @@ diversity_stability_synchrony %>% filter(is.na(cover_stability))
 #yes, due to few quads that never had MA cover --> can't measure stability of MA if there is no MA
 
 # PLOT
-(figure_3a <- 
+(figure_4a <- 
     ggplot() +
     geom_point(data = diversity_stability_synchrony,
                aes(x = richness_mean, y = cover_stability, colour = habitat), size = 1, alpha = 0.5) + 
@@ -52,11 +52,12 @@ filtered_rich_stab_effects_fg <- filter_ranges(rich_stab_emm_fg, dss_ranges, "ha
 
 
 ## NOAM --> is it right that there were only 16 quads through time that don't have any algae cover? 
+#yes, this is right
 #Warrning message:
 #Removed 16 rows containing missing values or values outside the scale range (`geom_point()`). -->  these are NAs in the stability column
 
 # PLOT
-(figure_3b <- 
+(figure_4b <- 
     ggplot() +
     geom_point(data = diversity_stability_synchrony,
                aes(x = functional_richness_mean, y = cover_stability, colour = habitat), size = 1, alpha = 0.5) + 
@@ -82,7 +83,7 @@ synch_stab_emm <- emmip(synch_stab_mod,
 filtered_synch_stab_effects <- filter_ranges(synch_stab_emm, dss_ranges, "habitat", "synchrony")
 
 # PLOT
-(figure_3c <- 
+(figure_4c <- 
     ggplot() +
     geom_point(data = diversity_stability_synchrony,
                aes(x = synchrony, y = cover_stability, colour = habitat), size = 1, alpha = 0.5) + 
@@ -99,7 +100,7 @@ filtered_synch_stab_effects <- filter_ranges(synch_stab_emm, dss_ranges, "habita
 #same 16 rows removal warning... 
 
 #### PANEL GRAPH ####
-(figure_3 <- ggarrange(figure_3a, figure_3b, figure_3c, 
+(figure_4 <- ggarrange(figure_4a, figure_4b, figure_4c, 
                        ncol = 3, nrow = 1, 
                        common.legend = TRUE,
                        heights = c(1,1),
@@ -108,7 +109,8 @@ filtered_synch_stab_effects <- filter_ranges(synch_stab_emm, dss_ranges, "habita
                        labels = c("a.", "b.", "c.", "d.", "e.", "f."),
                        font.label = list(size = 26, color = "black", face = "plain")))
 
-#ggsave(filename = "output/figure3_v7_12152025.jpg", figure_3, height = 6, width = 18)
+#actually going to be fig 4... 
+#ggsave(filename = "figures/figure4_v7_02162026.jpg", figure_3, height = 6, width = 18)
 
 # Supplemental figure S4
 
@@ -128,7 +130,7 @@ supplemental_tables_tableS4_plot %>%
                               "Backreef" = "Back reef",
                               "Forereef 10m" = "Forereef 10 m",
                               "Forereef 17m" = "Forereef 17 m"))+
-  xlab("Coefficient") +
+  xlab("Estimated slope") +
   ylab("") +
   ggtitle("a. Taxonomic richness") +
   model_themes + 
@@ -154,7 +156,7 @@ supplemental_tables_tableS4_plot %>%
                               "Backreef" = "Back reef",
                               "Forereef 10m" = "Forereef 10 m",
                               "Forereef 17m" = "Forereef 17 m"))+
-  xlab("Coefficient") +
+  xlab("Estimated slope") +
   ylab("") +
   ggtitle("b. Functional richness") +
   model_themes + 
@@ -181,7 +183,7 @@ supplemental_tables_tableS4_plot %>%
                               "Backreef" = "Back reef",
                               "Forereef 10m" = "Forereef 10 m",
                               "Forereef 17m" = "Forereef 17 m"))+
-  xlab("Coefficient") +
+  xlab("Estimated slope") +
   ylab("") +
   ggtitle("c. Species synchrony") +
   model_themes + 
@@ -195,7 +197,7 @@ supplemental_tables_tableS4_plot %>%
 s4_figure <- s4.taxon / s4.functional / s4.synch
 
 
-#ggsave(filename = "output/Supp_FigS4_12152025.jpg", height = 17, width = 14)
+#ggsave(filename = "figures/Supp_FigS4_02162026.jpg", height = 17, width = 14)
 #if you make it narrower than 14 it cuts off the legend
 
 
