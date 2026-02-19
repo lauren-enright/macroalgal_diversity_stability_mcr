@@ -75,5 +75,5 @@ diversity_stability_site <- alpha_diversity_site_macro %>%
 diversity_stability_synchrony_site <- left_join(diversity_stability_site, lm_synchrony_site, by = join_by(site_habitat))
 diversity_stability_synchrony_site$synchrony_trans <- sv_trans(diversity_stability_synchrony_site$synchrony)
 
-write.csv(file = here::here("data", "diversity_stability_synchrony_site_09262025.csv"), diversity_stability_synchrony_site, row.names = FALSE)
+#write.csv(file = here::here("data", "diversity_stability_synchrony_site_09262025.csv"), diversity_stability_synchrony_site, row.names = FALSE)
 
