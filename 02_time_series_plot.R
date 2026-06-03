@@ -43,7 +43,8 @@ cover_se <- cover_df %>%
                    turf = se(turf),
                    cca = se(cca),
                    sand = se(sand),
-                   other = se(other)
+                   other = se(other),
+                   n = n()
   )
 
 # pivot long
@@ -85,7 +86,8 @@ plot_list <- lapply(levels(figure_1_data$habitat), function(hab) {
     scale_colour_manual(values = functional_group_colours) +
     scale_x_continuous(breaks = seq(2007, 2023, 2)) +
     labs(y = "Cover",
-         x = "Year", title = "") +  
+         x = "Year", title = "") +
+    ylim(0,75) +
     trends_theme
 })
 
