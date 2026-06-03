@@ -47,6 +47,18 @@ cover_se <- cover_df %>%
                    n = n()
   )
 
+#just looking at sd to make sure se function in script 00 is working properly! 
+cover_sd <- cover_df %>%
+  dplyr::group_by(year, habitat) %>%
+  dplyr::summarise(macroalgae = sd(macroalgae),
+                   coral = sd(coral),
+                   turf = sd(turf),
+                   cca = sd(cca),
+                   sand = sd(sand),
+                   other = sd(other),
+                   n = n()
+  )
+
 # pivot long
 cover_long_means <- pivot_longer(
   data = cover_means,
@@ -62,7 +74,9 @@ cover_long_se <- pivot_longer(
   values_to = "se"
 )
 
+
 cover_long <- left_join(cover_long_means,cover_long_se, by = join_by(year, habitat, functional_group))
+
 
 # re-label benthic groupings for plotting
 cover_long$functional_group <- factor(cover_long$functional_group, 
@@ -76,11 +90,13 @@ figure_1_data <- subset(cover_long, functional_group != "Sand" & functional_grou
 #### PLOT FIGURE 1 ####
 plot_list <- lapply(levels(figure_1_data$habitat), function(hab) {
   ggplot(data = subset(figure_1_data, habitat == hab)) +
-    geom_point(aes(x = year, y = percent_cover, colour = functional_group), size = 3) +
     geom_errorbar(aes(x = year, ymin = percent_cover - se, ymax = percent_cover + se, colour = functional_group), 
-                  width = 0.1, linewidth = 2) +
+                  linewidth = 1, width = 0.1) +
+    #geom_errorbar(aes(x = year, ymin = percent_cover - se, ymax = percent_cover + se, colour = functional_group), 
+                 # width = 0.1, linewidth = 2) + (V1 ERRORBAR settings... )
     geom_line(aes(x = year, y = percent_cover, colour = functional_group), linewidth = 1) +
-    annotate("segment", x = 2006, xend = 2010, y = 75, yend = 75, linewidth = 2, colour = "grey") +
+    geom_point(aes(x = year, y = percent_cover, colour = functional_group), size = 2.5) +
+   annotate("segment", x = 2006, xend = 2010, y = 75, yend = 75, linewidth = 2, colour = "grey") +
     geom_vline(xintercept = 2010, linetype = 2, colour = "black", size = 1) +
     geom_vline(xintercept = 2019, linetype = 2, colour = "red", size = 1) +
     scale_colour_manual(values = functional_group_colours) +
@@ -91,9 +107,10 @@ plot_list <- lapply(levels(figure_1_data$habitat), function(hab) {
     trends_theme
 })
 
+
 (figure_1 <- ggarrange(plotlist = plot_list, 
                        ncol = 2, nrow = 2, 
-                       labels = c("a. Fringing reef", "b. Back reef", "c. Fore reef 10 m", "d. Fore reef 17 m"),
+                       labels = c("c. Fringing reef", "d. Back reef", "e. Fore reef 10 m", "f. Fore reef 17 m"),
                        label.x = 0.1,   # left padding (0 = hard left, 1 = hard right)
                        label.y = 0.98,   # top padding (0 = bottom, 1 = top)
                        hjust = 0, vjust = 1,
@@ -102,4 +119,4 @@ plot_list <- lapply(levels(figure_1_data$habitat), function(hab) {
                        font.label = list(size = 24, color = "black", face = "plain")))
 
 #this ended up being figure 2 in the MS, so saving it as so... 
-#ggsave(filename = "figures/figure2_v7_02162026.jpg", figure_1, height = 10, width = 14)
+ggsave(filename = "figures/figure2_v9_06032026.jpg", figure_1, height = 10, width = 14)
