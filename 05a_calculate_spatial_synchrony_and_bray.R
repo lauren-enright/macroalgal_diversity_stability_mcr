@@ -64,7 +64,8 @@ macro_long_data_summed <- macro_functional_groups_long %>%
 #from long to wide
 macro_wide_data_summed <- macro_long_data_summed %>%
   pivot_wider(names_from = taxa, values_from = sum_taxa, values_fill = 0)
-
+#1200 observations, 50 plots per habitats, 6 sites per habitat, 4 habitats :)
+#summarized across year! 
 
 ##### calculate bray #####
 # Initialize a results data frame
@@ -121,7 +122,7 @@ for (sh in sites) {
 }
 
 # View results
-# print(results_beta)
+print(results_beta)
 
 # merge together the beta div with the spatial synchrony output
 beta_spatialsync <- merge(dss_spatial_2, results_beta, by = "site_habitat")
