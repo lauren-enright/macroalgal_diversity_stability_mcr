@@ -34,6 +34,20 @@ car::Anova(cover_mod)
 #  habitat            141.77  3  < 2.2e-16 ***
 #  richness:habitat   294.57  3  < 2.2e-16 ***
 
+cover_mod_NEW <- glmmTMB(cover_trans ~ richness*habitat + (1|site_habitat/location) + (1|year), family = beta_family(), data = alpha_diversity_quad_macro)
+summary(cover_mod_NEW)
+car::Anova(cover_mod_NEW)
+performance::r2(cover_mod_NEW)
+em_cover_mod_NEW <- emtrends(cover_mod_NEW, pairwise ~ habitat, var = "richness") 
+em_cover_mod_NEW
+cld_cover_mod <- multcomp::cld(em_cover_mod_NEW$emtrends, Letters = letters, sort = FALSE)
+#Fringing - Backreef          0.35748 0.0247 Inf  14.475 <0.0001
+#Fringing - Forereef 10m      0.36451 0.0249 Inf  14.630 <0.0001
+#Fringing - Forereef 17m      0.44403 0.0256 Inf  17.313 <0.0001
+#Backreef - Forereef 10m      0.00704 0.0206 Inf   0.342  0.9863
+#Backreef - Forereef 17m      0.08656 0.0214 Inf   4.051  0.0003
+#Forereef 10m - Forereef 17m  0.07952 0.0213 Inf   3.741  0.0011
+
 hist(residuals(cover_mod)) # looks fine
 plot(residuals(cover_mod) ~ fitted(cover_mod)) # negative trend but it can't be less than 0 so not too concerned. some wave pattern
 performance::r2(cover_mod) # marginal: 0.635, conditional: 0.654
