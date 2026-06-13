@@ -40,6 +40,9 @@ car::Anova(rich_stab_mod)
 #richness_mean:habitat   33.926  3  2.054e-07 ***
 
 rich_stab_mod_NEW <- glmmTMB(cover_stability~ richness_mean*habitat + (1|site_habitat), family = Gamma(link = "log"), data = diversity_stability_synchrony)
+performance::check_singularity(rich_stab_mod_NEW)
+# (1|site/site_habitat) --> singular
+# (1|site_habitat) --> ok 
 summary(rich_stab_mod)
 car::Anova(rich_stab_mod_NEW)
 performance::r2(rich_stab_mod_NEW) 
@@ -140,7 +143,7 @@ cld_synch_stab_mod <- multcomp::cld(em_synch_stab_mod, Letters = letters, sort =
 #pull out data from models to make supplemental figures:
 
 # get estimates for taxonomic richness
-t.s4.a <- as.tibble(cld_rich_stab_mod) %>%
+t.s4.a <- as.tibble(rich_stab_mod_NEW) %>%
   mutate(Predictor = "Taxonomic richness") %>% 
   rename_if(str_detect(names(.), ".trend"), ~"Mean")
 

@@ -36,7 +36,8 @@ car::Anova(rich_stab_mod_site_NEW)
 performance::check_singularity(rich_stab_mod_site_NEW)
 #is singular:  (1|site)
 
-hist(residuals(rich_stab_mod_site)) # blocky but fine
+hist(residuals(rich_stab_mod_site))
+hist(residuals(rich_stab_mod_site_NEW)) # blocky but fine
 plot(residuals(rich_stab_mod_site) ~ fitted(rich_stab_mod_site)) # heteroskedastic - bring to group
 performance::r2(rich_stab_mod_site) #  Nagelkerke's R2: 0.684
 em_rich_stab_mod_site <- emtrends(rich_stab_mod_site, pairwise ~ habitat, var = "richness_mean") # no differences across habitats
