@@ -17,7 +17,7 @@ library(ggpubr)
 
 diversity_ranges_quad <- extract_ranges(alpha_diversity_quad_macro, "habitat", c("richness", "cover_trans", "functional_richness"))
 
-cover_emm <- emmip(cover_mod,
+cover_emm <- emmip(cover_mod_NEW,
                    habitat ~ richness,
                    at = list(richness = seq(0,10,1)), plotit = F, CIs = T)
 
@@ -41,7 +41,7 @@ filtered_cover_effects <- filter_ranges(trend = cover_emm, range_obj = diversity
 
 #### COVER ~ FUNCTIONAL RICHNESS ####
 # SETUP
-cover_emm_fg <- emmip(cover_mod_fg,
+cover_emm_fg <- emmip(cover_mod_fg_new,
                       habitat ~ functional_richness,
                       at = list(functional_richness = seq(0,10,1)), plotit = F, CIs = T)
 
@@ -81,7 +81,7 @@ figure2_attempt2 <- pfigure_2a + pfigure_2b +  plot_layout(guides = "collect") &
   theme(legend.position = "bottom")  
 
 #this ended up being figure 3 in the MS, so saving it as so... 
-#ggsave(filename = "figures/figure3_02152026_v2.jpg", figure2_attempt2, height = 8, width = 16)
+#ggsave(filename = "figures/figure3_06122026_v3.jpg", figure2_attempt2, height = 8, width = 16)
 
 #adding supplemental figures
 
@@ -147,6 +147,6 @@ supplemental_tables_tableS2_plot %>%
 s2_figure <- s2.taxo + s2.functional +  plot_layout(guides = "collect") &          # collect legends into one
   theme(legend.position = "bottom")  
 
-ggsave(filename = "figures/Supp_FigS2_02162026.jpg", s2_figure, height = 10, width = 22)
+#ggsave(filename = "figures/Supp_FigS2_06122026.jpg", s2_figure, height = 10, width = 22)
 
 
