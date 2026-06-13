@@ -15,6 +15,10 @@ source("00_functions_and_aes.R")
 diversity_stability_synchrony <- read.csv(here::here("data", "full_plot_level_dss_09262025.csv")) 
 diversity_stability_synchrony_site <- read.csv(here::here("data", "diversity_stability_synchrony_site_09262025.csv"))
 
+diversity_stability_synchrony$site_habitat <- paste(diversity_stability_synchrony$site,
+                                                    diversity_stability_synchrony$habitat,
+                                                    sep = "_")
+
 #want habitats to be in order.
 diversity_stability_synchrony$habitat <- factor(diversity_stability_synchrony$habitat,
                                              levels = c("Fringing", "Backreef", "Forereef 10m", "Forereef 17m"))
@@ -34,6 +38,13 @@ car::Anova(rich_stab_mod)
 #richness_mean         2721.440  1  < 2.2e-16 ***
 #habitat                325.876  3  < 2.2e-16 ***
 #richness_mean:habitat   33.926  3  2.054e-07 ***
+
+rich_stab_mod_NEW <- glmmTMB(cover_stability~ richness_mean*habitat + (1|site_habitat), family = Gamma(link = "log"), data = diversity_stability_synchrony)
+summary(rich_stab_mod)
+car::Anova(rich_stab_mod_NEW)
+performance::r2(rich_stab_mod_NEW) 
+em_rich_stab_mod_NEW <- emtrends(rich_stab_mod_NEW, pairwise ~ habitat, var = "richness_mean")
+cld_rich_stab_mod_NEW <- multcomp::cld(em_rich_stab_mod_NEW , Letters = letters, sort = FALSE)
 
 hist(residuals(rich_stab_mod)) # looks good
 plot(residuals(rich_stab_mod) ~ fitted(rich_stab_mod)) # heteroskedastic - bring to group
@@ -65,6 +76,10 @@ car::Anova(rich_stab_mod_fg)
 #habitat                           119.466  3  < 2.2e-16 ***
 # functional_richness_mean:habitat   24.858  3  1.653e-05 ***
 
+rich_stab_mod_fg_new <- glmmTMB(cover_stability ~ functional_richness_mean*habitat + (1|site_habitat), family = Gamma(link = "log"), data = diversity_stability_synchrony)
+car::Anova(rich_stab_mod_fg_new)
+em_rich_stab_mod_fg_new <- emtrends(rich_stab_mod_fg_new, pairwise ~ habitat, var = "functional_richness_mean") 
+
 hist(residuals(rich_stab_mod_fg)) # looks fine
 plot(residuals(rich_stab_mod_fg) ~ fitted(rich_stab_mod_fg)) # same as usual 
 performance::r2(rich_stab_mod_fg) 
@@ -95,6 +110,19 @@ car::Anova(synch_stab_mod)
 #  synchrony:habitat  327.97  3  < 2.2e-16 ***
 hist(residuals(synch_stab_mod)) # looks good
 plot(residuals(synch_stab_mod) ~ fitted(synch_stab_mod)) # same issue as always
+
+synch_stab_mod_NEW <- glmmTMB(cover_stability ~ synchrony*habitat + (1|site_habitat), family = Gamma("log"), data = diversity_stability_synchrony)
+summary(synch_stab_mod)
+car::Anova(synch_stab_mod_NEW)
+em_synch_stab_mod_NEW <- emtrends(synch_stab_mod_NEW, pairwise ~ habitat, var = "synchrony")
+
+#Fringing - Backreef            0.415 0.0857 Inf   4.842 <0.0001
+#Fringing - Forereef 10m        1.124 0.1450 Inf   7.764 <0.0001
+#Fringing - Forereef 17m        1.605 0.1440 Inf  11.185 <0.0001
+#Backreef - Forereef 10m        0.709 0.1490 Inf   4.760 <0.0001
+#Backreef - Forereef 17m        1.190 0.1480 Inf   8.058 <0.0001
+#Forereef 10m - Forereef 17m    0.481 0.1880 Inf   2.556  0.0518
+
 #r.squaredGLMM(synch_stab_mod) # 0.63, 0.71
 performance::r2(synch_stab_mod) # marginal: 0.66, conditional: 0.74 - matches
 em_synch_stab_mod <- emtrends(synch_stab_mod, pairwise ~ habitat, var = "synchrony") # fringing and backreef not different

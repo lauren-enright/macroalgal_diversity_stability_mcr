@@ -30,6 +30,12 @@ car::Anova(rich_stab_mod_site)
 # richness_mean         17.645  1  2.662e-05 ***
 # habitat               32.229  3  4.682e-07 ***
 # richness_mean:habitat  8.075  3    0.04449 *  
+
+rich_stab_mod_site_NEW <- glmmTMB(cover_stability~ richness_mean*habitat + (1|site), family = Gamma(link = "log"), data = diversity_stability_synchrony_site)
+car::Anova(rich_stab_mod_site_NEW)
+performance::check_singularity(rich_stab_mod_site_NEW)
+#is singular:  (1|site)
+
 hist(residuals(rich_stab_mod_site)) # blocky but fine
 plot(residuals(rich_stab_mod_site) ~ fitted(rich_stab_mod_site)) # heteroskedastic - bring to group
 performance::r2(rich_stab_mod_site) #  Nagelkerke's R2: 0.684
@@ -58,6 +64,19 @@ car::Anova(rich_stab_mod_site_fg)
 #habitat                          13.7512  3   0.003264 **
 #functional_richness_mean:habitat 12.9510  3   0.004744 **
 
+rich_stab_mod_site_fg_new <- glmmTMB(cover_stability~ functional_richness_mean*habitat + (1|site), family = Gamma(link = "log"), data = diversity_stability_synchrony_site)
+performance::check_singularity(rich_stab_mod_site_fg_new)
+summary(rich_stab_mod_site_fg)
+car::Anova(rich_stab_mod_site_fg_new)
+
+#Chisq Df Pr(>Chisq)   
+#functional_richness_mean          3.6282  1   0.056808 . 
+#habitat                          15.0558  3   0.001770 **
+#functional_richness_mean:habitat 13.8219  3   0.003158 **
+
+em_rich_stab_mod_site_fg_new <- emtrends(rich_stab_mod_site_fg_new, pairwise ~ habitat, var = "functional_richness_mean") 
+#Forereef 10m - Fringing       -1.208 0.384 Inf  -3.143  0.0091
+
 hist(residuals(rich_stab_mod_site_fg)) # blocky but fine
 plot(residuals(rich_stab_mod_site_fg) ~ fitted(rich_stab_mod_site_fg)) # fine
 performance::r2(rich_stab_mod_site_fg) # new 8 functional groups:  Nagelkerke's R2: 0.584
@@ -84,7 +103,10 @@ car::Anova(synch_stab_mod_site)
 #                    Chisq Df Pr(>Chisq)    
 # synchrony         22.117  1  2.565e-06 ***
 # habitat            9.345  3    0.02504 *  
-# synchrony:habitat 10.534  3    0.01453 *   
+# synchrony:habitat 10.534  3    0.01453 * 
+
+synch_stab_mod_site_new <- glmmTMB(cover_stability ~ synchrony*habitat + (1|site), family = Gamma("log"), data = diversity_stability_synchrony_site)
+performance::check_singularity(synch_stab_mod_site)
 hist(residuals(synch_stab_mod_site)) # almost uniform
 plot(residuals(synch_stab_mod_site) ~ fitted(synch_stab_mod_site)) # same issue as always
 performance::r2(synch_stab_mod_site) # 0.702
