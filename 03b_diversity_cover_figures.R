@@ -21,8 +21,6 @@ cover_emm <- emmip(cover_mod_NEW,
                    habitat ~ richness,
                    at = list(richness = seq(0,10,1)), plotit = F, CIs = T)
 
-
-
 filtered_cover_effects <- filter_ranges(trend = cover_emm, range_obj = diversity_ranges_quad, group = "habitat", value = "richness")
 
 # PLOT
