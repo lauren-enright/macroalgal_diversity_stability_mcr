@@ -18,12 +18,10 @@ car::Anova(site_cover_mod)
 #  habitat           6.6247  3    0.08487 .  
 #richness:habitat  3.2967  3    0.34811  
 
-site_cover_mod_NEW <- glmmTMB(cover_trans ~ richness + habitat + (1|site_habitat) + (1|year), family = beta_family(), data = alpha_diversity_site_macro)
-summary(site_cover_mod2)
-car::Anova(site_cover_mod_NEW)
 
-performance::check_singularity(site_cover_mod_NEW)
+performance::check_singularity(site_cover_mod)
 #site/site_habitat = singular
+#site_habitat = NOT singular
 
 #this matches
 hist(residuals(site_cover_mod)) # some positive skew, not the worst thing ever
@@ -59,11 +57,9 @@ car::Anova(site_cover_mod_fg)
 #  habitat                      4.1544  3    0.24527    
 #functional_richness:habitat  6.5034  3    0.08953 .  
 
-site_cover_mod_fg_new <- glmmTMB(cover_trans ~ functional_richness*habitat + (1|site/site_habitat) + (1|year), family = beta_family(), data = alpha_diversity_site_macro)
 performance::check_singularity(site_cover_mod_fg)
 #site/site_habitat = singular
 #site_habitat = OK
-
 
 hist(residuals(site_cover_mod_fg)) # positive skew
 plot(residuals(site_cover_mod_fg) ~ fitted(site_cover_mod_fg)) # a little heteroscedastic but can't be less than 0
@@ -82,9 +78,6 @@ car::Anova(site_cover_mod_fg2)
 #Chisq Df Pr(>Chisq)    
 #functional_richness 23.1372  1  1.508e-06 ***
 # habitat              3.8533  3     0.2777  
-
-site_cover_mod_fg_NEW <- glmmTMB(cover_trans ~ functional_richness + habitat + (1|site) + (1|year), family = beta_family(), data = alpha_diversity_site_macro)
-car::Anova(site_cover_mod_fg_NEW)
 
 hist(residuals(site_cover_mod_fg2)) # positive skew
 plot(residuals(site_cover_mod_fg2) ~ fitted(site_cover_mod_fg2)) # a little heteroscedastic but can't be less than 0

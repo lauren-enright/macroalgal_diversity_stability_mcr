@@ -44,7 +44,7 @@ diversity_stability_synchrony %>% filter(is.na(cover_stability))
 
 #### STABILITY ~ FUNCTIONAL RICHNESS ####
 # SETUP
-rich_stab_emm_fg <- emmip(rich_stab_mod_fg,
+rich_stab_emm_fg <- emmip(rich_stab_mod_fg_new,
                           habitat ~ functional_richness_mean,
                           at = list(functional_richness_mean = seq(0,10,0.01)), plotit = F, CIs = T)
 
@@ -95,6 +95,7 @@ filtered_synch_stab_effects <- filter_ranges(synch_stab_emm, dss_ranges, "habita
     labs(x = "Species synchrony", y = "", title = "") +
     model_themes
 )
+
 #ggsave(filename = "output/figure_4c.png", figure_4c, height = 10, width = 14)
 
 #same 16 rows removal warning... 
@@ -110,7 +111,7 @@ filtered_synch_stab_effects <- filter_ranges(synch_stab_emm, dss_ranges, "habita
                        font.label = list(size = 26, color = "black", face = "plain")))
 
 #actually going to be fig 4... 
-#ggsave(filename = "figures/figure4_v7_02162026.jpg", figure_3, height = 6, width = 18)
+#ggsave(filename = "figures/figure4_v8_06152026.jpg", figure_4, height = 6, width = 18)
 
 # Supplemental figure S4
 
@@ -197,7 +198,7 @@ supplemental_tables_tableS4_plot %>%
 s4_figure <- s4.taxon / s4.functional / s4.synch
 
 
-#ggsave(filename = "figures/Supp_FigS4_02162026.jpg", height = 17, width = 14)
+#ggsave(filename = "figures/Supp_FigS4_06152026.jpg", height = 17, width = 14)
 #if you make it narrower than 14 it cuts off the legend
 
 
