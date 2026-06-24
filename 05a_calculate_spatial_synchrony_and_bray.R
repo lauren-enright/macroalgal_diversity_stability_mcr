@@ -47,8 +47,6 @@ dss_spatial_2 <- merge(dss_spatial, mean_synchrony_stability[, which(names(mean_
 dss_spatial_2$ratio <- dss_spatial_2$cover_stability/dss_spatial_2$stability_mean
 dss_spatial_2$ratio_reversed <- dss_spatial_2$stability_mean/dss_spatial_2$cover_stability
 
-#write.csv(file = here::here("data", "spatial_synchrony_09172025.csv"), dss_spatial_2)
-
 # calculate ranges
 dss_spatial_ranges <- extract_ranges(dss_spatial_2, "habitat", c("spatial_synchrony", "synchrony_mean", "stability_mean"))
 
@@ -130,7 +128,9 @@ beta_spatialsync <- merge(dss_spatial_2, results_beta, by = "site_habitat")
 # calculate ranges
 beta_ranges <- extract_ranges(beta_spatialsync, "habitat", c("spatial_synchrony", "synchrony_mean", "stability_mean", "mean_bray"))
 
+
 ##### BRAY WISCONSIN TRANSFORMED ####
+## This is not presented in manuscript, just done to see if transformation is necessary ##
 
 # Initialize a results data frame
 results_beta_transformed <- data.frame(

@@ -9,10 +9,13 @@ source("00_functions_and_aes.R")
 
 #source("01b_data_prep.R")
 
-#read in cover_df from script 01b 
+#overall cover data can be produced using publicly available data  
+#MCR LTER: Coral Reef: Long-term Population and Community Dynamics: Benthic Algae and Other Community Components, ongoing since 2005
+#verison knb-lter-mcr.8.36
 
 cover_df <- read.csv(here::here("data", "cover_df_09162025.csv"))
-
+unique(cover_df$total) 
+#perfect, all quads add to 100
 
 #make habitat a factor
 cover_df$habitat <- as.factor(cover_df$habitat)

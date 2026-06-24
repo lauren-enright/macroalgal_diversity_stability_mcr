@@ -19,35 +19,11 @@ alpha_diversity_quad_macro <- read.csv(here::here("data", "alpha_diversity_quad_
 alpha_diversity_quad_macro$habitat <- factor(alpha_diversity_quad_macro$habitat,
                      levels = c("Fringing", "Backreef", "Forereef 10m", "Forereef 17m"))
 
-cor(alpha_diversity_quad_macro$richness, alpha_diversity_quad_macro$functional_richness, use = "complete.obs", method = "pearson")
+cor(alpha_diversity_quad_macro$richness, alpha_diversity_quad_macro$functional_richness, use = "complete.obs", method = "pearson") #0.9584012
 cor.test(alpha_diversity_quad_macro$richness, alpha_diversity_quad_macro$functional_richness, method = "pearson")   # or "spearman"
 
 
 #### COVER ~ RICHNESS ####
-cover_mod <- glmmTMB(cover_trans ~ richness*habitat + (1|site/location) + (1|year), family = beta_family(), data = alpha_diversity_quad_macro)
-summary(cover_mod)
-car::Anova(cover_mod)
-
-#Response: cover_trans
-#Chisq Df Pr(>Chisq)    #this matches! 
-#richness         30916.15  1  < 2.2e-16 ***
-#  habitat            141.77  3  < 2.2e-16 ***
-#  richness:habitat   294.57  3  < 2.2e-16 ***
-
-hist(residuals(cover_mod)) # looks fine
-plot(residuals(cover_mod) ~ fitted(cover_mod)) # negative trend but it can't be less than 0 so not too concerned. some wave pattern
-performance::r2(cover_mod) # marginal: 0.635, conditional: 0.654
-em_cover_mod <- emtrends(cover_mod, pairwise ~ habitat, var = "richness") # backreef not different from forereef, forereef also not different
-
-#contrast                    estimate     SE  df z.ratio p.value
-#Fringing - Backreef          0.34720 0.0241 Inf  14.409  <.0001
-#Fringing - Forereef 10m      0.34865 0.0240 Inf  14.514  <.0001
-#Fringing - Forereef 17m      0.38953 0.0250 Inf  15.599  <.0001
-#Backreef - Forereef 10m      0.00144 0.0205 Inf   0.071  0.9999
-#Backreef - Forereef 17m      0.04232 0.0214 Inf   1.979  0.1957
-#Forereef 10m - Forereef 17m  0.04088 0.0209 Inf   1.952  0.2063
-
-cld_cover_mod <- multcomp::cld(em_cover_mod$emtrends, Letters = letters, sort = FALSE)
 
 #random effects as site_habitat (aka site ID) instead of site (coarser LTER locations)
 cover_mod_NEW <- glmmTMB(cover_trans ~ richness*habitat + (1|site_habitat/location) + (1|year), family = beta_family(), data = alpha_diversity_quad_macro)
@@ -88,37 +64,6 @@ cld_cover_mod_new <- multcomp::cld(em_cover_mod_NEW$emtrends, Letters = letters,
 #### COVER ~ FUNCTIONAL RICHNESS ####
 #check number of functional richness categories
 unique(alpha_diversity_quad_macro$functional_richness)
-
-cover_mod_fg <- glmmTMB(cover_trans ~ functional_richness*habitat + (1|site/location) + (1|year), family = beta_family(), data = alpha_diversity_quad_macro)
-
-summary(cover_mod_fg)
-car::Anova(cover_mod_fg)
-
-#NEW - with 8 functional groups
-#functional_richness         31789.564  1  < 2.2e-16 ***
-# habitat                        48.108  3   2.02e-10 ***
-# functional_richness:habitat   457.578  3  < 2.2e-16 ***
-
-hist(residuals(cover_mod_fg)) # good
-performance::r2(cover_mod_fg) # marginal = 0.63, conditional = 0.65 
-em_cover_mod_fg <- emtrends(cover_mod_fg, pairwise ~ habitat, var = "functional_richness") 
-
-#new - 8 functional groups
-#$contrasts
-#contrast                    estimate     SE  df z.ratio p.value
-#Fringing - Backreef            0.223 0.0265 Inf   8.404  <.0001
-#Fringing - Forereef 10m        0.357 0.0260 Inf  13.699  <.0001
-#Fringing - Forereef 17m        0.536 0.0262 Inf  20.502  <.0001
-#Backreef - Forereef 10m        0.134 0.0231 Inf   5.813  <.0001
-#Backreef - Forereef 17m        0.314 0.0231 Inf  13.562  <.0001
-#Forereef 10m - Forereef 17m    0.180 0.0223 Inf   8.067  <.0001
-
-cld_cover_mod_fg <- multcomp::cld(em_cover_mod_fg$emtrends, Letters = letters, sort = FALSE)
-
-#Fringing                          1.91 0.0208 Inf      1.87      1.95  a    
-#Backreef                          1.69 0.0169 Inf      1.65      1.72   b   
-#Forereef 10m                      1.55 0.0162 Inf      1.52      1.58    c  
-#Forereef 17m                      1.37 0.0162 Inf      1.34      1.40     d 
 
 #random effects as site_habitat (aka site ID) instead of site (coarser LTER locations)
 cover_mod_fg_new <- glmmTMB(cover_trans ~ functional_richness*habitat + (1|site_habitat/location) + (1|year), family = beta_family(), data = alpha_diversity_quad_macro)

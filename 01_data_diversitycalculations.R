@@ -10,13 +10,25 @@ library(tidyverse)
 library(vegan)
 
 
-## read in data from script 01b
+## read in data from data package
 macro_functional_groups_long <- read.csv(here::here("data", "macroalgalfunctionalgroups_long_09262025.csv"), stringsAsFactors = F)
+
+####
+#overall cover data can be produced using publicly available data  
+#MCR LTER: Coral Reef: Long-term Population and Community Dynamics: Benthic Algae and Other Community Components, ongoing since 2005
+#verison knb-lter-mcr.8.36
 cover_df <- read.csv(here::here("data", "cover_df_09162025.csv"))
+####
 
 colnames(macro_functional_groups_long)
 unique(macro_functional_groups_long$taxa)
 unique(macro_functional_groups_long$functional_group)
+
+macro_functional_groups_long %>%
+  select(taxa, functional_group) %>%
+  distinct()
+
+#63 taxa! 
 
 
 # Summarize to check against functional group sums later..
@@ -30,7 +42,7 @@ taxa_sum_check  %>%
   dplyr::summarise(sum_macrocover_allyears = sum(sum_macrocover)) %>% 
   dplyr::filter(sum_macrocover_allyears == 0)
 
-#okay, there are 16 quads that never have macroalgal in them across all years. 
+#okay, there are 16 quads that never have macroalgae in them across all years. - yes
 # this means 16 quads are dropped in our models with stability, as you cannot model the stability of 0.
 # quads with 0s are included in the cover data.
 
@@ -152,6 +164,8 @@ macro_taxa_groups_wide_functionalgroup <- macro_taxa_groups_long_functionalgroup
 
 #richness at every quad/year combination 
 macro_taxa_groups_wide_functionalgroup$functional_richness <- vegan::specnumber(macro_taxa_groups_wide_functionalgroup[5:12])
+#adding 13th column of functional richness
+colnames(macro_taxa_groups_wide_functionalgroup)
 
 unique(macro_taxa_groups_wide_functionalgroup$functional_richness)
 #0 to 4
@@ -180,9 +194,9 @@ alpha_diversity_all_site_macro<-merge(alpha_diversity_site_macro,
 
 #write out csvs
 
-write.csv(alpha_diversity_all_quad_macro, "data/alpha_diversity_quad_macro_09262025.csv", row.names = FALSE)
-write.csv(alpha_diversity_all_site_macro, "data/alpha_diversity_site_macro_09262025.csv", row.names = FALSE)
-write.csv(site_macro, "data/site_macro_alpha_wide_09262025.csv", row.names = FALSE)
+#write.csv(alpha_diversity_all_quad_macro, "data/alpha_diversity_quad_macro_09262025.csv", row.names = FALSE)
+#write.csv(alpha_diversity_all_site_macro, "data/alpha_diversity_site_macro_09262025.csv", row.names = FALSE)
+#write.csv(site_macro, "data/site_macro_alpha_wide_09262025.csv", row.names = FALSE)
 
 
 

@@ -66,9 +66,6 @@ car::Anova(spatial_synchrony_mod2)
 #spatial_synchrony 11.483  1  0.0007024 ***
 #habitat           16.655  3  0.0008321 ***
 
-
-#BUT SHOULDN'T IT BE SINCE NO SIGN INTERACTION? 
-# Yes, use this 
 em_spatial_synchrony_mod2 <- emmeans(spatial_synchrony_mod2, pairwise ~ habitat, type = "response")
 
 #$contrasts
@@ -109,7 +106,7 @@ car::Anova(ratio_mod3)
 #                       Chisq Df Pr(>Chisq)    
 #log(spatial_synchrony) 774.21  1  < 2.2e-16 ***
 
-performance::r2(ratio_mod3)  #0.97
+performance::r2(ratio_mod3) #0.97
 
 
 #### SPATIAL SYNCHRONY ~ BRAY ####

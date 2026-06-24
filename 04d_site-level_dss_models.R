@@ -47,12 +47,11 @@ em_rich_stab_mod_site <- emtrends(rich_stab_mod_site, pairwise ~ habitat, var = 
 # Forereef 10m - Forereef 17m  -0.0721 0.242 Inf  -0.298  0.9908
 
 cld_rich_stab_mod_site <- multcomp::cld(em_rich_stab_mod_site, Letters = letters, sort = FALSE)
-
-#experimenting with adding coarse LTER location grouping as a random effect, but it is singular, so leaving as is! 
-rich_stab_mod_site_NEW <- glmmTMB(cover_stability~ richness_mean*habitat + (1|site), family = Gamma(link = "log"), data = diversity_stability_synchrony_site)
-car::Anova(rich_stab_mod_site_NEW)
-performance::check_singularity(rich_stab_mod_site_NEW)
-#is singular:  (1|site) 
+# habitat      richness_mean.trend     SE  df asymp.LCL asymp.UCL .group
+#Fringing                  0.2015 0.0649 Inf    0.0743     0.329  a    
+#Backreef                  0.0161 0.1010 Inf   -0.1827     0.215  a    
+#Forereef 10m              0.4170 0.1300 Inf    0.1624     0.672  a    
+#Forereef 17m              0.4891 0.2040 Inf    0.0894     0.889  a    
 
 #### STABILITY ~ FUNCTIONAL RICHNESS ####
 
@@ -86,6 +85,12 @@ em_rich_stab_mod_site_fg <- emtrends(rich_stab_mod_site_fg, pairwise ~ habitat, 
 
 cld_rich_stab_mod_site_fg <- multcomp::cld(em_rich_stab_mod_site_fg, Letters = letters, sort = FALSE)
 
+#habitat      functional_richness_mean.trend    SE  df asymp.LCL asymp.UCL .group
+#Fringing                             0.3921 0.143 Inf     0.112     0.672  a    
+#Backreef                             0.0978 0.302 Inf    -0.494     0.689  ab   
+#Forereef 10m                        -0.9008 0.391 Inf    -1.668    -0.134   b   
+#Forereef 17m                        -0.4491 0.356 Inf    -1.146     0.248  ab  
+
 #### STABILITY ~ SYNCHRONY ####
 synch_stab_mod_site <- glmmTMB(cover_stability ~ synchrony*habitat, family = Gamma("log"), data = diversity_stability_synchrony_site)
 summary(synch_stab_mod_site)
@@ -96,8 +101,6 @@ car::Anova(synch_stab_mod_site)
 # habitat            9.345  3    0.02504 *  
 # synchrony:habitat 10.534  3    0.01453 * 
 
-synch_stab_mod_site_new <- glmmTMB(cover_stability ~ synchrony*habitat + (1|site), family = Gamma("log"), data = diversity_stability_synchrony_site)
-performance::check_singularity(synch_stab_mod_site)
 hist(residuals(synch_stab_mod_site)) # almost uniform
 plot(residuals(synch_stab_mod_site) ~ fitted(synch_stab_mod_site)) # same issue as always
 performance::r2(synch_stab_mod_site) # 0.702
