@@ -26,27 +26,27 @@ cor.test(alpha_diversity_quad_macro$richness, alpha_diversity_quad_macro$functio
 #### COVER ~ RICHNESS ####
 
 #random effects as site_habitat (aka site ID) instead of site (coarser LTER locations)
-cover_mod_NEW <- glmmTMB(cover_trans ~ richness*habitat + (1|site_habitat/location) + (1|year), family = beta_family(), data = alpha_diversity_quad_macro)
-summary(cover_mod_NEW)
-car::Anova(cover_mod_NEW)
+cover_mod <- glmmTMB(cover_trans ~ richness*habitat + (1|site_habitat/location) + (1|year), family = beta_family(), data = alpha_diversity_quad_macro)
+summary(cover_mod)
+car::Anova(cover_mod)
 
 #Chisq Df Pr(>Chisq)    
 #richness         28840.4013  1    < 2e-16 ***
 #habitat              8.0026  3    0.04596 *  
 #richness:habitat   327.8860  3    < 2e-16 ***
 
-performance::r2(cover_mod_NEW) 
+performance::r2(cover_mod) 
 #Conditional R2: 0.648
 #Marginal R2: 0.626
 
 #need to check singularity 
-performance::check_singularity(cover_mod_NEW) 
+performance::check_singularity(cover_mod) 
 #(1|site/site_habitat/location) = singular
 #(1|site_habitat/location) = not singular, so confirming this is the random effects structure that we want 
 
-em_cover_mod_NEW <- emtrends(cover_mod_NEW, pairwise ~ habitat, var = "richness") 
-em_cover_mod_NEW
-cld_cover_mod_new <- multcomp::cld(em_cover_mod_NEW$emtrends, Letters = letters, sort = FALSE)
+em_cover_mod <- emtrends(cover_mod, pairwise ~ habitat, var = "richness") 
+em_cover_mod
+cld_cover_mod <- multcomp::cld(em_cover_mod$emtrends, Letters = letters, sort = FALSE)
 #Fringing - Backreef          0.35748 0.0247 Inf  14.475 <0.0001
 #Fringing - Forereef 10m      0.36451 0.0249 Inf  14.630 <0.0001
 #Fringing - Forereef 17m      0.44403 0.0256 Inf  17.313 <0.0001
@@ -66,10 +66,10 @@ cld_cover_mod_new <- multcomp::cld(em_cover_mod_NEW$emtrends, Letters = letters,
 unique(alpha_diversity_quad_macro$functional_richness)
 
 #random effects as site_habitat (aka site ID) instead of site (coarser LTER locations)
-cover_mod_fg_new <- glmmTMB(cover_trans ~ functional_richness*habitat + (1|site_habitat/location) + (1|year), family = beta_family(), data = alpha_diversity_quad_macro)
+cover_mod_fg <- glmmTMB(cover_trans ~ functional_richness*habitat + (1|site_habitat/location) + (1|year), family = beta_family(), data = alpha_diversity_quad_macro)
 
-summary(cover_mod_fg_new)
-car::Anova(cover_mod_fg_new)
+summary(cover_mod_fg)
+car::Anova(cover_mod_fg)
 #Response: cover_trans
 #Chisq Df Pr(>Chisq)    
 #functional_richness         30210.2372  1     <2e-16 ***
@@ -77,19 +77,19 @@ car::Anova(cover_mod_fg_new)
 #functional_richness:habitat   502.7920  3     <2e-16 ***
 
 #want to check these against each other
+# good
 hist(residuals(cover_mod_fg)) # good
-hist(residuals(cover_mod_fg_new)) # good
 
 #need to check singularity 
-performance::check_singularity(cover_mod_fg_new)
+performance::check_singularity(cover_mod_fg)
 ##(1|site/site_habitat/location) = singular
 #(1|site_habitat/location) = not singular 
 
-performance::r2(cover_mod_fg_new)
+performance::r2(cover_mod_fg)
 #Conditional R2: 0.642
 #Marginal R2: 0.622
 
-em_cover_mod_fg_new <- emtrends(cover_mod_fg_new, pairwise ~ habitat, var = "functional_richness") 
+em_cover_mod_fg <- emtrends(cover_mod_fg, pairwise ~ habitat, var = "functional_richness") 
 #contrast                    estimate     SE  df z.ratio p.value
 #Fringing - Backreef            0.236 0.0269 Inf   8.748 <0.0001
 #Fringing - Forereef 10m        0.358 0.0268 Inf  13.372 <0.0001
@@ -98,7 +98,7 @@ em_cover_mod_fg_new <- emtrends(cover_mod_fg_new, pairwise ~ habitat, var = "fun
 #Backreef - Forereef 17m        0.340 0.0231 Inf  14.698 <0.0001
 #Forereef 10m - Forereef 17m    0.217 0.0225 Inf   9.667 <0.0001
 
-cld_cover_mod_fg_new <- multcomp::cld(em_cover_mod_fg_new$emtrends, Letters = letters, sort = FALSE)
+cld_cover_mod_fg <- multcomp::cld(em_cover_mod_fg$emtrends, Letters = letters, sort = FALSE)
 
 #habitat      functional_richness.trend     SE  df asymp.LCL asymp.UCL .group
 #Fringing                          1.88 0.0216 Inf      1.84      1.93  a    
@@ -110,14 +110,14 @@ cld_cover_mod_fg_new <- multcomp::cld(em_cover_mod_fg_new$emtrends, Letters = le
 #pull out data from models to make supplemental figures:
 
 #richness by cover
-t.s2.a <- as_tibble(cld_cover_mod_new) %>%
+t.s2.a <- as_tibble(cld_cover_mod) %>%
   mutate(Predictor = "Taxonomic richness",
          `Spatial scale` = "Plot-level") %>% 
   # rename this so it matches for joining purposes
   rename_if(str_detect(names(.), ".trend"), ~"Mean")
 #functional richness by cover
 
-t.s2.b <-  as_tibble(cld_cover_mod_fg_new) %>%
+t.s2.b <-  as_tibble(cld_cover_mod_fg) %>%
   mutate(Predictor = "Functional richness",
          `Spatial scale` = "Plot-level") %>% 
   rename_if(str_detect(names(.), ".trend"), ~"Mean")

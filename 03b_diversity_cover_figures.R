@@ -17,7 +17,7 @@ library(ggpubr)
 
 diversity_ranges_quad <- extract_ranges(alpha_diversity_quad_macro, "habitat", c("richness", "cover_trans", "functional_richness"))
 
-cover_emm <- emmip(cover_mod_NEW,
+cover_emm <- emmip(cover_mod,
                    habitat ~ richness,
                    at = list(richness = seq(0,10,1)), plotit = F, CIs = T)
 
@@ -33,13 +33,13 @@ filtered_cover_effects <- filter_ranges(trend = cover_emm, range_obj = diversity
                 alpha = 0.5) +
     scale_colour_manual(values = habitat_colours, labels = habitat_labels) +
     scale_fill_manual(values = habitat_colours, labels = habitat_labels) +
-    labs(y = "Cover\n", x = "Taxonomic richness", title = "a.") +
+    labs(y = "Cover\n", x = "Taxonomic richness", title = "") +
     model_themes 
 )
 
 #### COVER ~ FUNCTIONAL RICHNESS ####
 # SETUP
-cover_emm_fg <- emmip(cover_mod_fg_new,
+cover_emm_fg <- emmip(cover_mod_fg,
                       habitat ~ functional_richness,
                       at = list(functional_richness = seq(0,10,1)), plotit = F, CIs = T)
 
@@ -55,7 +55,7 @@ filtered_cover_effects_fg <- filter_ranges(cover_emm_fg, diversity_ranges_quad, 
                 alpha = 0.5) +
     scale_colour_manual(values = habitat_colours, labels = habitat_labels) +
     scale_fill_manual(values = habitat_colours, labels = habitat_labels) +
-    labs(y = "", x = "Functional richness", title = "b.") +
+    labs(y = "", x = "Functional richness", title = "") +
     model_themes
 )
 #ggsave(filename = "output/figure_3b_quad_v2.png", figure_3b, height = 10, width = 14)
@@ -79,7 +79,7 @@ figure2_attempt2 <- pfigure_2a + pfigure_2b +  plot_layout(guides = "collect") &
   theme(legend.position = "bottom")  
 
 #this ended up being figure 3 in the MS, so saving it as so... 
-#ggsave(filename = "figures/figure3_06122026_v3.jpg", figure2_attempt2, height = 8, width = 16)
+#ggsave(filename = "figures/figure3_06252026_final.jpg", figure_2, height = 8, width = 16)
 
 #adding supplemental figures
 
@@ -145,6 +145,6 @@ supplemental_tables_tableS2_plot %>%
 s2_figure <- s2.taxo + s2.functional +  plot_layout(guides = "collect") &          # collect legends into one
   theme(legend.position = "bottom")  
 
-#ggsave(filename = "figures/Supp_FigS2_06122026.jpg", s2_figure, height = 10, width = 22)
+#ggsave(filename = "figures/Supp_FigS2_06252026_final.jpg", s2_figure, height = 10, width = 22)
 
 

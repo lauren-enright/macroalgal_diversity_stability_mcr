@@ -8,7 +8,7 @@ source("04b_dss_models.R")
 
 #### STABILITY ~ RICHNESS ####
 # SETUP
-rich_stab_emm <- emmip(rich_stab_mod_NEW,
+rich_stab_emm <- emmip(rich_stab_mod,
                        habitat ~ richness_mean,
                        at = list(richness_mean = seq(0,10,0.01)), plotit = F, CIs = T)
 
@@ -21,7 +21,7 @@ any(is.infinite(diversity_stability_synchrony$cover_stability)) #false
 
 diversity_stability_synchrony %>% filter(is.na(cover_stability))
 
-## NOAM --> is it right that there were only 16 quads through time that don't have any algae cover?
+## is it right that there were only 16 quads through time that don't have any algae cover?
 #Warrning message:
 #Removed 16 rows containing missing values or values outside the scale range (`geom_point()`) --> these are NAs in the stability column
 #yes, due to few quads that never had MA cover --> can't measure stability of MA if there is no MA
@@ -44,14 +44,14 @@ diversity_stability_synchrony %>% filter(is.na(cover_stability))
 
 #### STABILITY ~ FUNCTIONAL RICHNESS ####
 # SETUP
-rich_stab_emm_fg <- emmip(rich_stab_mod_fg_new,
+rich_stab_emm_fg <- emmip(rich_stab_mod_fg,
                           habitat ~ functional_richness_mean,
                           at = list(functional_richness_mean = seq(0,10,0.01)), plotit = F, CIs = T)
 
 filtered_rich_stab_effects_fg <- filter_ranges(rich_stab_emm_fg, dss_ranges, "habitat", "functional_richness_mean")
 
 
-## NOAM --> is it right that there were only 16 quads through time that don't have any algae cover? 
+## is it right that there were only 16 quads through time that don't have any algae cover? 
 #yes, this is right
 #Warrning message:
 #Removed 16 rows containing missing values or values outside the scale range (`geom_point()`). -->  these are NAs in the stability column
@@ -76,7 +76,7 @@ filtered_rich_stab_effects_fg <- filter_ranges(rich_stab_emm_fg, dss_ranges, "ha
 
 #### STABILITY ~ SYNCHRONY ####
 # SETUP
-synch_stab_emm <- emmip(synch_stab_mod_NEW,
+synch_stab_emm <- emmip(synch_stab_mod,
                         habitat ~ synchrony,
                         at = list(synchrony = seq(0,1,0.01)), plotit = F, CIs = T)
 
@@ -107,11 +107,11 @@ filtered_synch_stab_effects <- filter_ranges(synch_stab_emm, dss_ranges, "habita
                        heights = c(1,1),
                        widths = c(1,1,1),
                        legend = "bottom", 
-                       labels = c("a.", "b.", "c.", "d.", "e.", "f."),
+                       labels = c("a.", "b.", "c."),
                        font.label = list(size = 26, color = "black", face = "plain")))
 
 #actually going to be fig 4... 
-#ggsave(filename = "figures/figure4_v8_06152026.jpg", figure_4, height = 6, width = 18)
+#ggsave(filename = "figures/figure4_06_25_2026_final.jpg", figure_4, height = 6, width = 18)
 
 # Supplemental figure S4
 
@@ -198,7 +198,7 @@ supplemental_tables_tableS4_plot %>%
 s4_figure <- s4.taxon / s4.functional / s4.synch
 
 
-#ggsave(filename = "figures/Supp_FigS4_06152026.jpg", height = 17, width = 14)
+#ggsave(filename = "figures/Supp_FigS4_06252026_final.jpg", height = 17, width = 14)
 #if you make it narrower than 14 it cuts off the legend
 
 

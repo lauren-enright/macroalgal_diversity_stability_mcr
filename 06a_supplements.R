@@ -66,68 +66,6 @@ labs_fill <- list(
   "asparagopsis_taxiformis"= expression(italic("Asparagopsis taxiformis"))
 )
 
-#pull out top 10 abundance, otherwise is messy with all ofthem 
-aggdat_hab <- aggregate(prop_cover ~ taxa * year * habitat,  data = subset(macro_functional_groups_long,
-                                                                           taxa == "sargassum_pacificum" |
-                                                                             taxa == "turbinaria_ornata" | 
-                                                                             taxa == "dictyota_bartayresiana"| 
-                                                                             taxa == "peyssonnelia_inamoena"| 
-                                                                             taxa == "peyssonnelia_sp"| 
-                                                                             taxa == "halimeda_minima"| 
-                                                                             taxa == "halimeda_sp"| 
-                                                                             taxa == "lobophora_variegata"| 
-                                                                             taxa == "halimeda_opuntia"| 
-                                                                             taxa == "amansia_rhodantha"| 
-                                                                             taxa == "asparagopsis_taxiformis"), FUN = mean)
-
-# order the habitats so figure is correct
-aggdat_hab$habitat <- factor(aggdat_hab$habitat, levels = c("Fringing", "Backreef", "Forereef 10m", "Forereef 17m"))
-
-aggdat_hab$habitat
-
-yr_min <- min(aggdat_hab$year, na.rm = TRUE)
-yr_max <- max(aggdat_hab$year, na.rm = TRUE)
-y_max  <- max(aggdat_hab$prop_cover, na.rm = TRUE)
-
-spoke_2007 <- data.frame(year = 2007, y0 = 0, y1 = y_max*1.001)
-
-(aggdat_hab_supp <- ggplot(aggdat_hab, aes(year, prop_cover, color = taxa)) + 
-  # plot species lines
-  geom_line(size = 3) + # 3 or 4 works well. 
-  # faceted by species
-  facet_wrap(~habitat,
-             labeller = as_labeller(c(
-               "Fringing" = "a. Fringing reef",
-               "Backreef" = "b. Back reef",
-               "Forereef 10m" = "c. Fore reef 10 m",
-               "Forereef 17m" = "d. Fore reef 17 m"
-             ))) +
-  # on polor coordinates
-  coord_polar(clip = "off")  +
-  scale_color_manual(values = colors_abundance, labels = labs_fill, drop = FALSE) +
-  theme_classic() +
-  labs(x = "", y = "Cover", color = "Taxa") +
-    scale_x_continuous(breaks = seq(yr_min, yr_max, by = 2)) +
-    scale_y_continuous(
-      limits = c(0, y_max*1.001),
-      expand = c(0, 0)
-    ) +
-  theme(
-    panel.grid.major = element_line(color = "grey40", linewidth = 0.6),
-    panel.grid.minor = element_line(color = "grey40", linewidth = 0.3),
-    strip.text   = element_text(size = 25, face = "bold"),   # facet labels
-    axis.title   = element_text(size = 25),                  # axis titles
-    axis.text    = element_text(size = 20),                  # axis tick labels
-    legend.title = element_text(size = 25, face = "bold"),   # legend title
-    legend.text  = element_text(size = 20),                   # legend items
-    plot.margin = margin(55, 90, 55, 90) 
-  ))
-
-
-#ggsave(filename = "output/Supp_FigS1_02062026.jpg", aggdat_hab_supp, height = 15, width = 20)
-
-
-
 ### Trying for Stacked Bar Graph Instead
 
 focal_taxa <- c(
@@ -170,18 +108,11 @@ aggdat_hab_other <- macro_functional_groups_long %>%
     )
   )
 
-aggdat_hab_other <- macro_functional_groups_long %>%
-  mutate(
-    taxa_grouped = if_else(taxa %in% focal_taxa, taxa, "Other")
-  ) %>%
-  group_by(taxa_grouped, year, habitat) %>%
-  summarise(
-    prop_cover = mean(prop_cover, na.rm = TRUE),
-    .groups = "drop"
-  )
-
 aggdat_hab_other$habitat <- factor(aggdat_hab_other$habitat, levels = c("Fringing", "Backreef", "Forereef 10m", "Forereef 17m"))
 
+yr_min <- min(aggdat_hab_other$year, na.rm = TRUE)
+yr_max <- max(aggdat_hab_other$year, na.rm = TRUE)
+y_max  <- max(aggdat_hab_other$prop_cover, na.rm = TRUE)
 
 (aggdat_hab_supp_bar <- ggplot(aggdat_hab_other, aes(year, prop_cover, fill = taxa_grouped)) + 
     # plot species lines
@@ -217,6 +148,6 @@ aggdat_hab_other$habitat <- factor(aggdat_hab_other$habitat, levels = c("Fringin
       axis.text.x = element_text(size = 22, angle = 45, hjust = 1)
     ))
 
-#ggsave(filename = "figures/Supp_FigS1_0615026_withother.jpg", aggdat_hab_supp_bar, height = 15, width = 20)
+#ggsave(filename = "figures/Supp_FigS1_06252026_final2.jpg", aggdat_hab_supp_bar, height = 15, width = 20)
 
 

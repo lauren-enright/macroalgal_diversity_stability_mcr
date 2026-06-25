@@ -68,14 +68,11 @@ filtered_spat_stab_effects$habitat <- factor(filtered_spat_stab_effects$habitat,
     ylim(c(0.5,5.5))
 )
 
-#LOOKS DIFFERENT THAN OLD VERISON OF PLOT BC NO SIGN INTERACTION BT SPATIAL SYN AND HAB
-
-
 #### REGIONAL STABILITY : LOCAL STABILITY ~ SPATIAL SYNCHRONY ####
 # SETUP
 
 # using for model not by habitat
-#using ratio mod 3
+#using ratio mod 3 (logged)
 ratio_emm2 <- emmip(ratio_mod3,
                    ~ spatial_synchrony,
                    at = list(spatial_synchrony = seq(0,1,0.01)), plotit = F, CIs = T)  
@@ -86,7 +83,7 @@ ratio_emm2_filterered <- ratio_emm2 %>% filter(spatial_synchrony >= rng_ratio [1
 
 
 # PLOT - without habitat model
-#with model 3
+#with model 3 (logged)
 (ratio_plot3 <- 
     ggplot() +
     geom_point(data = dss_spatial_2,
@@ -109,16 +106,12 @@ ratio_emm2_filterered <- ratio_emm2 %>% filter(spatial_synchrony >= rng_ratio [1
 #### SPATIAL SYNCHRONY ~ BRAY ####
 # SETUP
 
-#if using model w/o habitat
 bray_emm2 <- emmip(bray_mod2,
                    ~ mean_bray,
                    at = list(mean_bray = seq(0,1,0.01)), plotit = F, CIs = T)   
 
-
-#Noam, I think this does the same thing as your fancy function, but just for 1 range of values... :) 
 rng_bray <- range(beta_spatialsync$mean_bray, na.rm = TRUE)
 bray_emm2_filterered <- bray_emm2 %>% filter(mean_bray >= rng_bray[1], mean_bray <= rng_bray[2])
-
 
 # plot without habitat model
 
@@ -148,7 +141,7 @@ bray_emm2_filterered <- bray_emm2 %>% filter(mean_bray >= rng_bray[1], mean_bray
                        labels = c("a.", "b.", "c.", "d."),
                        font.label = list(size = 26, color = "black", face = "plain")))
 
-ggsave(filename = "figures/figure5_02162026.jpg", figure_5, height = 18, width = 18)
+#ggsave(filename = "figures/figure5_06252026_final.jpg", figure_5, height = 18, width = 18)
 
 
 #### Figure S6: #####
@@ -208,5 +201,5 @@ supplement_S6 <- s6.a + s6.b +
   plot_layout(guides = "collect") &
   theme(legend.position = "bottom")
 
-ggsave(filename = "figures/Supp_FigS6_02162026.jpg", supplement_S6, height = 10, width = 20)
+#ggsave(filename = "figures/Supp_FigS6_06252026_final.jpg", supplement_S6, height = 10, width = 20)
 

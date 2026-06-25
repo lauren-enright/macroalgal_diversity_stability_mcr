@@ -17,6 +17,15 @@ cover_df <- read.csv(here::here("data", "cover_df_09162025.csv"))
 unique(cover_df$total) 
 #perfect, all quads add to 100
 
+cover_df %>%
+  group_by(habitat, site, year) %>%
+  count() %>%
+  filter(n!=50)
+
+#okay, overall 17 
+  
+
+
 #make habitat a factor
 cover_df$habitat <- as.factor(cover_df$habitat)
 levels(cover_df$habitat)
@@ -122,4 +131,4 @@ plot_list <- lapply(levels(figure_1_data$habitat), function(hab) {
                        font.label = list(size = 24, color = "black", face = "plain")))
 
 #this ended up being figure 2 in the MS, so saving it as so... 
-ggsave(filename = "figures/figure2_v9_06032026.jpg", figure_1, height = 10, width = 14)
+#ggsave(filename = "figures/figure2_06252026_final.jpg", figure_1, height = 10, width = 14)

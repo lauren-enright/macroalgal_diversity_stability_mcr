@@ -21,7 +21,7 @@ filtered_rich_stab_effects_site <- filter_ranges(rich_stab_emm_site, dss_ranges_
                alpha = 0.3) +
    scale_colour_manual(values = habitat_colours, labels = habitat_labels) +
    scale_fill_manual(values = habitat_colours, labels = habitat_labels) +
-   scale_y_continuous(limits = c(0.5, 4.2), breaks = c(1,2,3,4)) +
+   scale_y_continuous(limits = c(0.5, 4.7), breaks = c(1,2,3,4)) +
    labs(y = "Site-level stability", x = "Taxonomic richness", title = "") +
    model_themes +
    theme(
@@ -54,7 +54,7 @@ filtered_rich_stab_effects_site <- filter_ranges(rich_stab_emm_site_fg, dss_rang
                 alpha = 0.3) +
     scale_colour_manual(values = habitat_colours, labels = habitat_labels) +
     scale_fill_manual(values = habitat_colours, labels = habitat_labels) +
-    scale_y_continuous(limits = c(0.5, 4.2), breaks = c(1,2,3,4)) +
+    scale_y_continuous(limits = c(0.5, 4.7), breaks = c(1,2,3,4)) +
     scale_x_continuous(limits = c(1.75, 4.2), breaks = c(1,2,3,4)) +
     labs(y = "Site-level stability", x = "Functional richness", title = "") +
     model_themes +
@@ -84,7 +84,7 @@ filtered_synch_stab_effects_site <- filter_ranges(synch_stab_emm_site, dss_range
     scale_colour_manual(values = habitat_colours) +
     scale_fill_manual(values = habitat_colours) +
     labs(x = "Species synchrony", y = "Site-level stability", title = "") +
-    scale_y_continuous(limits = c(0.5, 4.2), breaks = c(1,2,3,4)) +
+    scale_y_continuous(limits = c(0.5, 4.27), breaks = c(1,2,3,4)) +
     model_themes +
     theme(
       axis.title.x = element_text(size = 35),
@@ -221,6 +221,6 @@ supplemental_tables_tableS5_plot  %>%
                                    font.label = list(size = 26, color = "black", face = "plain")))
 
 #ggsave(filename = "output/Supp_FigS5_12162025_v3.jpg", supplement5_site_dss, height = 30, width = 25)
-#ggsave(filename = "figures/Supp_FigS5_02162026_v6.jpg", supplement5_site_dss_v2, height = 30, width = 25)
+ggsave(filename = "figures/Supp_FigS5_06252026_final.jpg", supplement5_site_dss_v2, height = 30, width = 25)
 #options: 22 and 18
 #options: 22 and 30 
