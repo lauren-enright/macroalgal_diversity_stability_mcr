@@ -17,15 +17,6 @@ cover_df <- read.csv(here::here("data", "cover_df_09162025.csv"))
 unique(cover_df$total) 
 #perfect, all quads add to 100
 
-cover_df %>%
-  group_by(habitat, site, year) %>%
-  count() %>%
-  filter(n!=50)
-
-#okay, overall 17 
-  
-
-
 #make habitat a factor
 cover_df$habitat <- as.factor(cover_df$habitat)
 levels(cover_df$habitat)
