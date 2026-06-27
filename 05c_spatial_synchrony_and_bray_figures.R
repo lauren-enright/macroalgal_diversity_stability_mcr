@@ -182,7 +182,7 @@ supplemental_tableS6 %>%
   # add confidence intervals:
   geom_linerange(aes(xmin = Lower_CI, xmax = Upper_CI), linewidth = 2.5) +
   scale_colour_manual(values = habitat_colours, label = habitat_labels) +
-  xlab("Estimated slope") +
+  xlab("Estimated Mean") +
   ylab("") +
   ggtitle("b. Spatial synchrony") +
   model_themes + 
