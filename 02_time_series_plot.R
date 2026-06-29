@@ -113,7 +113,7 @@ plot_list <- lapply(levels(figure_1_data$habitat), function(hab) {
 
 (figure_1 <- ggarrange(plotlist = plot_list, 
                        ncol = 2, nrow = 2, 
-                       labels = c("c. Fringing reef", "d. Back reef", "e. Fore reef 10 m", "f. Fore reef 17 m"),
+                       labels = c("c. Fringing reef", "e. Back reef", "d. Fore reef 10 m", "f. Fore reef 17 m"),
                        label.x = 0.1,   # left padding (0 = hard left, 1 = hard right)
                        label.y = 0.98,   # top padding (0 = bottom, 1 = top)
                        hjust = 0, vjust = 1,
@@ -122,4 +122,4 @@ plot_list <- lapply(levels(figure_1_data$habitat), function(hab) {
                        font.label = list(size = 24, color = "black", face = "plain")))
 
 #this ended up being figure 2 in the MS, so saving it as so... 
-#ggsave(filename = "figures/figure2_06252026_final.jpg", figure_1, height = 10, width = 14)
+#ggsave(filename = "figures/figure2_06282026_final.jpg", figure_1, height = 10, width = 14)
