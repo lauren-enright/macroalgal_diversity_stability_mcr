@@ -29,14 +29,14 @@ Code is achieved at  [will place link to zenodo here]
 ### Data
 Data can be found at [will place link to EDI here]
 
-Column Names
+Column Names:
 
 - taxa: taxonomy of the observed algae, or name of the observed substrate or functional group.
 - year: year of observation.
 - location: name of the unique location combines the site, habitat, transect and quadrat.
-- site: name of the LTER location/LTER site.
+- site: name of the LTER site (6 unique LTER sites).
 - habitat: name of the habitat.
-- site_habitat: name of the site habitat combines the LTER location/LTER site and habitat, for 24 unique sites
+- site_habitat: name of the site habitat combines the LTER site and habitat, for 24 unique sites.
 - transect: transect number.
 - quadrat: quadrat number identifies the 0.25 square meter quadrat.
 - prop_cover: percent of area covered in a quadrat, expressed as a proportion. For example, 1 = 100 % cover and 0.4 = 40% cover.
