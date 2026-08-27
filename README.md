@@ -5,8 +5,6 @@ Data analysis and visualization in support of for Enright et al. -  Diversity is
 ### Description 
 This project analyzes data from a 17-year time series of benthic macroalgae on coral reefs in Moorea, French Polynesia. Scripts are numbered in the order in which they should be run.
 
-Data can be found at [will place link to EDI here]
-
 Code is achieved at  [will place link to zenodo here]
 
 ### Contents 
@@ -27,4 +25,21 @@ Code is achieved at  [will place link to zenodo here]
 - `05b_spatial_synchrony_and_bray_models.R` - analyzes relationships among spatial synchrony, site-level stability, and beta diversity
 - `05c_spatial_synchrony_and_bray_figures.R` -  generates Figure 5 and Figure S6
 - `06a_supplements.R` - generates Figure S1
+
+### Data
+Data can be found at [will place link to EDI here]
+Column Names
+
+- taxa: taxonomy of the observed algae, or name of the observed substrate or functional group.
+- year: year of observation.
+- location: name of the unique location combines the site, habitat, transect and quadrat.
+- site: name of the LTER location/LTER site.
+- habitat: name of the habitat.
+- site_habitat: name of the site habitat combines the LTER location/LTER site and habitat, for 24 unique sites
+- transect: transect number.
+- quadrat: quadrat number identifies the 0.25 square meter quadrat.
+- prop_cover: percent of area covered in a quadrat, expressed as a proportion. For example, 1 = 100 % cover and 0.4 = 40% cover.
+- functional_group: functional grouping of the taxa, based on existing literature or AlgaeBase.
+
+Additional metadata is available by following the EDI link. 
 
