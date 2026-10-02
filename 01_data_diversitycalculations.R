@@ -131,7 +131,8 @@ alpha_diversity_quad_macro %>%
 
 alpha_diversity_quad_macro %>%
   group_by(habitat) %>%
-  summarise(avg = mean(richness))
+  summarise(avg = mean(richness),
+            se = sd(richness)/sqrt(n()))
 
 macroalgal_cover_quad <- cover_df[,c("year", "habitat", "site", "location", "macroalgae")]
 
@@ -157,7 +158,8 @@ alpha_diversity_site_macro <-
 alpha_diversity_site_macro %>%
   dplyr::filter(richness > 0) %>%
   group_by(habitat) %>%
-  summarise(avg = mean(richness))
+  summarise(avg = mean(richness),
+            se = sd(richness)/sqrt(n()))
 
 alpha_diversity_site_macro %>%
   group_by(habitat) %>%
@@ -220,6 +222,13 @@ colnames(macro_taxa_groups_wide_functionalgroup)
 unique(macro_taxa_groups_wide_functionalgroup$functional_richness)
 #0 to 4
 
+macro_taxa_groups_wide_functionalgroup %>%
+  group_by(habitat) %>%
+  summarise(avg = mean(functional_richness),
+            se = sd(functional_richness)/sqrt(n()),
+            n = n())
+  
+
 ##### REPEAT AT SITE LEVEL ####
 #pivot wide at site level
 fg_summary_site_wide_SUM <- fg_summary_site_SUM %>%
@@ -227,6 +236,13 @@ fg_summary_site_wide_SUM <- fg_summary_site_SUM %>%
 
 #richness at every site/year combination ---> NOT AVERAGED,
 fg_summary_site_wide_SUM$functional_richness <- vegan::specnumber(fg_summary_site_wide_SUM[4:11])
+
+
+fg_summary_site_wide_SUM %>%
+  group_by(habitat) %>%
+  summarise(avg = mean(functional_richness),
+            se = sd(functional_richness)/sqrt(n()),
+            n = n())
 
 
 #merge taxonomic data with functional group summary 
