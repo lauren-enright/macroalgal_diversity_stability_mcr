@@ -24,11 +24,27 @@ colnames(macro_functional_groups_long)
 unique(macro_functional_groups_long$taxa)
 unique(macro_functional_groups_long$functional_group)
 
+#8 functional groups
+
 macro_functional_groups_long %>%
   select(taxa, functional_group) %>%
   distinct()
 
 #63 taxa! 
+
+macro_functional_groups_long %>%
+  select(taxa) %>%
+  distinct()
+
+#63 taxa! 
+
+funxgroup_tally <- macro_functional_groups_long %>%
+  select(taxa, functional_group) %>%
+  distinct() %>%
+  group_by(functional_group) %>%
+  tally()
+
+sum(funxgroup_tally$n)
 
 
 # Summarize to check against functional group sums later..
@@ -58,6 +74,19 @@ macro_functional_groups_long %>%
 #2 Forereef 10m     28
 #3 Forereef 17m     28
 #4 Fringing         43
+
+macro_functional_groups_long %>%
+filter(site_habitat == "lter_5_fringing") %>%
+  filter(year == 2010) %>%
+  filter(prop_cover > 0)
+
+
+macro_functional_groups_long %>%
+  filter(site_habitat == "lter_1_backreef") %>%
+  filter(year == 2011) %>%
+  filter(prop_cover > 0) %>% 
+  dplyr::select(taxa) %>%
+  distinct()
 
 #wide data at taxonomic level
 macro_taxa_groups_wide_taxonomic <- macro_functional_groups_long %>%
@@ -96,6 +125,14 @@ alpha_diversity_quad_macro <-
 
 alpha_diversity_quad_macro <- merge(meta_df, alpha_diversity_quad_macro, by = c("location", "year"))
 
+alpha_diversity_quad_macro %>%
+  filter(site_habitat == "lter_5_fringing") %>%
+  filter(year == 2010)
+
+alpha_diversity_quad_macro %>%
+  group_by(habitat) %>%
+  summarise(avg = mean(richness))
+
 macroalgal_cover_quad <- cover_df[,c("year", "habitat", "site", "location", "macroalgae")]
 
 alpha_diversity_quad_macro <-
@@ -112,10 +149,23 @@ alpha_diversity_site_macro <-
   data.frame(
     year = site_macro$year,
     site_habitat = site_macro$site_habitat,
-    shannon = diversity(site_macro[ , -which(names(site_macro) %in% meta_cols)], "shannon"),
+    shannon = vegan::diversity(site_macro[ , -which(names(site_macro) %in% meta_cols)], "shannon"),
     richness = rowSums(site_macro[ , -which(names(site_macro) %in% meta_cols)] > 0)
   ) %>% 
   left_join(site_meta_df, alpha_diversity_site_macro, by = c("site_habitat", "year"))
+
+alpha_diversity_site_macro %>%
+  dplyr::filter(richness > 0) %>%
+  group_by(habitat) %>%
+  summarise(avg = mean(richness))
+
+alpha_diversity_site_macro %>%
+  group_by(habitat) %>%
+  summarise(avg = mean(richness))
+
+alpha_diversity_site_macro %>%
+  filter(site_habitat == "lter_5_fringing")
+
 
 # add cover
 alpha_diversity_site_macro$prop_cover <- rowSums(site_macro[,-which(names(site_macro)  %in% colnames(site_meta_df))]) 
