@@ -6,6 +6,9 @@ source("00_functions_and_aes.R")
 
 alpha_diversity_site_macro <- read.csv(here::here("data", "alpha_diversity_site_macro_09262025.csv"))
 
+cor.test(alpha_diversity_site_macro$richness, alpha_diversity_site_macro$functional_richness)
+plot(alpha_diversity_site_macro$richness, alpha_diversity_site_macro$functional_richness)
+
 #### Taxonomic Diversity ####
 
 site_cover_mod <- glmmTMB(cover_trans ~ richness*habitat + (1|site_habitat) + (1|year), family = beta_family(), data = alpha_diversity_site_macro)

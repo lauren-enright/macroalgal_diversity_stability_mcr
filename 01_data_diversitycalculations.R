@@ -110,7 +110,7 @@ site_macro <- macro_taxa_groups_wide_taxonomic %>%
 #384 observations/24 (6 sites * 4 habitats = 24)
 
 site_meta_cols <- c("year", "site", "habitat", "site_habitat")
-site_meta_df <- site_macro[,which(names(site_macro) %in% meta_cols)]
+site_meta_df <- site_macro[,which(names(site_macro) %in% site_meta_cols)]
 
 
 
