@@ -15,13 +15,17 @@ library(ggpubr)
 #### COVER ~ RICHNESS ####
 # SETUP
 
-diversity_ranges_quad <- extract_ranges(alpha_diversity_quad_macro, "habitat", c("richness", "cover_trans", "functional_richness"))
+diversity_ranges_quad <- extract_ranges(alpha_diversity_quad_macro_no0s, "habitat", c("richness", "cover_trans_no", "functional_richness"))
 
 cover_emm <- emmip(cover_mod,
                    habitat ~ richness,
-                   at = list(richness = seq(0,10,1)), plotit = F, CIs = T)
+                   at = list(richness = seq(0,6,1)), plotit = F, CIs = T)
 
 filtered_cover_effects <- filter_ranges(trend = cover_emm, range_obj = diversity_ranges_quad, group = "habitat", value = "richness")
+
+range(cover_emm$yvar)            # if this is already within 0–1, don't inv_logit it
+range(inv_logit(cover_emm$yvar))
+range(inv_logit(cover_emm$UCL))
 
 # PLOT
 (figure_2a <- 
@@ -39,7 +43,7 @@ filtered_cover_effects <- filter_ranges(trend = cover_emm, range_obj = diversity
 
 #### COVER ~ FUNCTIONAL RICHNESS ####
 # SETUP
-cover_emm_fg <- emmip(cover_mod_fg,
+cover_emm_fg <- emmip(cover_mod_fg_nozeros,
                       habitat ~ functional_richness,
                       at = list(functional_richness = seq(0,10,1)), plotit = F, CIs = T)
 
