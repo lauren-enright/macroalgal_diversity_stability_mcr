@@ -11,6 +11,183 @@ library(ggplot2)
 library(patchwork)
 library(ggpubr)
 
+#### Figure 3A: Presence plot ####
+
+# Model estimates: probability of an empty plot by habitat
+
+pres_pred <- emmeans(presence_model, ~ habitat, type = "response") %>%
+  as.data.frame()
+
+# Standardize column names for plotting
+names(pres_pred)[names(pres_pred) %in% c("prob", "response", "emmean")] <- "fit"
+names(pres_pred)[names(pres_pred) %in% c("asymp.LCL", "lower.CL")]      <- "lcl"
+names(pres_pred)[names(pres_pred) %in% c("asymp.UCL", "upper.CL")]      <- "ucl"
+
+# Observed proportion of occupied plots at each site
+pres_obs <- df %>%
+  group_by(habitat, site_habitat) %>%
+  summarise(prop_present = mean(present), n = n(), .groups = "drop")
+
+habitat_labels_wrapped <- c("Fringing"     = "Fringing\nreef",
+                    "Backreef"     = "Back\nreef",
+                    "Forereef 10m" = "Fore reef\n10 m",
+                    "Forereef 17m" = "Fore reef\n17 m")
+
+
+figure3a <- ggplot() +
+  #geom_jitter(data = pres_obs,
+         #    aes(x = habitat, y = prop_present * 100, colour = habitat),
+          #  width = 0.12, height = 0, alpha = 0.5, size = 2) +
+  geom_errorbar(data = pres_pred,
+                aes(x = habitat, ymin = lcl * 100, ymax = ucl * 100, color = habitat),
+                width = 0.15, linewidth = 0.8) +
+  geom_point(data = pres_pred,
+             aes(x = habitat, y = fit * 100, color = habitat, fill = habitat),
+             size = 3.5, shape = 21, stroke = 1.2) +
+  scale_y_continuous(limits = c(0, 100)) +
+  labs(x = NULL, y = "Probability of macroalgal presence (%)") +
+  scale_colour_manual(values = habitat_colours, labels = habitat_labels) +
+  scale_fill_manual(values = habitat_colours, labels = habitat_labels) +
+  scale_x_discrete(labels = habitat_labels_wrapped) +
+  model_themes +
+  theme(legend.position = "none",
+        aspect.ratio = 1,
+        axis.text.x = element_text(size=20),
+        axis.title.y = element_text(size=22))
+       
+        
+        # axis.text.x = element_text(angle = 15, hjust = 1))
+
+#### Figure 3B: COVER ~ RICHNESS ####
+# SETUP
+
+rich_grid <- seq(1, max(alpha_diversity_quad_macro_present$richness), length.out = 100)
+
+pred_taxo_richness <- emmeans(model_occ_log, ~ log_rich| habitat,
+                                    at = list(log_rich = log(rich_grid)),
+                                    component = "cond", type = "response") %>%
+  as.data.frame() %>%
+  mutate(taxo_richness = exp(log_rich)) %>%
+  left_join(ranges, by = "habitat") %>%
+  filter(taxo_richness >= rmin, taxo_richness <= rmax)
+
+# emmeans names the CI columns asymp.LCL/asymp.UCL or lower.CL/upper.CL
+# depending on version; standardize them
+names(pred_taxo_richness)[names(pred_taxo_richness) %in% c("asymp.LCL", "lower.CL")] <- "lcl"
+names(pred_taxo_richness)[names(pred_taxo_richness) %in% c("asymp.UCL", "upper.CL")] <- "ucl"
+
+cover_emm <- emmip(model_occ_log, habitat ~ log_rich,
+                   at = list(richness = 1:6),
+                   type = "response", plotit = FALSE, CIs = TRUE)
+
+Figure3b <- ggplot() +
+  # geom_jitter(data = occ, #don't want raw data
+  #            aes(x = richness, y = cover_p * 100, colour = habitat),
+  #           width = 0.15, height = 0, alpha = 0.15, size = 1) +
+  geom_ribbon(data = pred_taxo_richness,
+              aes(x = taxo_richness, ymin = lcl, ymax = ucl,
+                  fill = habitat),
+              alpha = 0.25) +
+  geom_line(data = pred_taxo_richness,
+            aes(x = taxo_richness, y = response, colour = habitat),
+            linewidth = 1) +
+  ylim(0.05,0.55) +
+  # facet_wrap(~ habitat, nrow = 1) +
+  scale_x_continuous(breaks = 1:max(occ$richness)) +
+  scale_colour_manual(values = habitat_colours, labels = habitat_labels) +
+  scale_fill_manual(values = habitat_colours, labels = habitat_labels) +
+  theme_classic(base_size = 12) +
+  labs(y = "Cover", x = "Taxonomic richness", title = "") +
+  model_themes +
+  theme(axis.title.x   = element_text(size = 24,
+                                       margin = margin(t = -7)),
+    legend.position = "bottom",
+        strip.background = element_blank(),
+        strip.text = element_text(face = "bold"),
+        aspect.ratio = 1)
+
+Figure3b
+
+#### Figure 3C: COVER ~ FUNCTIONAL RICHNESS ####
+# SETUP
+pred_functional_richness <- emmeans(m_occ_log_functional, ~ log_function_rich| habitat,
+                at = list(log_function_rich = log(rich_grid_fun)),
+                component = "cond", type = "response") %>%
+  as.data.frame() %>%
+  mutate(functional_richness = exp(log_function_rich)) %>%
+  left_join(ranges, by = "habitat") %>%
+  filter(functional_richness >= rmin, functional_richness <= rmax)
+
+# emmeans names the CI columns asymp.LCL/asymp.UCL or lower.CL/upper.CL
+# depending on version; standardize them
+names(pred_functional_richness)[names(pred_functional_richness) %in% c("asymp.LCL", "lower.CL")] <- "lcl"
+names(pred_functional_richness)[names(pred_functional_richness) %in% c("asymp.UCL", "upper.CL")] <- "ucl"
+
+str(pred_functional_richness)
+
+Figure3c <- ggplot() +
+  # geom_jitter(data = occ, #don't want raw data
+  #            aes(x = richness, y = cover_p * 100, colour = habitat),
+  #           width = 0.15, height = 0, alpha = 0.15, size = 1) +
+  geom_ribbon(data = pred_functional_richness,
+              aes(x = functional_richness, ymin = lcl, ymax = ucl,
+                  fill = habitat),
+              alpha = 0.25) +
+  geom_line(data = pred_functional_richness,
+            aes(x = functional_richness, y = response, colour = habitat),
+            linewidth = 1) +
+  ylim(0.05,0.55) +
+  # facet_wrap(~ habitat, nrow = 1) +
+  scale_x_continuous(breaks = 1:max(occ$richness)) +
+  scale_colour_manual(values = habitat_colours, labels = habitat_labels) +
+  scale_fill_manual(values = habitat_colours, labels = habitat_labels) +
+  theme_classic() +
+  theme(legend.position = "bottom",
+        aspect.ratio = 1,
+        strip.background = element_blank(),
+        strip.text = element_text(face = "bold")) +
+  labs(y = "Cover", x = "Functional richness", title = "") +
+  model_themes +
+  theme(legend.position = "bottom",
+        aspect.ratio = 1,
+        strip.background = element_blank(),
+        strip.text = element_text(face = "bold"),
+        axis.title.x   = element_text(size = 24,
+        margin = margin(t = -7)),
+   # axis titles
+  axis.text    = element_text(size = 8),    # tick labels
+  legend.text  = element_text(size = 8),    # legend labels
+  legend.title = element_text(size = 9),    # legend title
+  plot.title   = element_text(size = 11)) # plot title)
+
+
+Figure3c
+
+### COMBINING TOGETHER ####
+
+#### PANEL GRAPH ####
+
+pfigure_3a <- figure3a + theme(plot.margin = margin(10, 10, 10, 10))
+pfigure_3b <- Figure3b + theme(plot.margin = margin(10, 10, 10, 10))
+pfigure_3c <- Figure3c + theme(plot.margin = margin(10, 10, 10, 10))
+
+leg <- get_legend(pfigure_3b)
+
+(figure_3 <- ggarrange(pfigure_3a, pfigure_3b, pfigure_3c,  
+                       ncol = 3, nrow = 1, 
+                       legend.grob = leg,
+                       common.legend = TRUE,
+                       align = "hv",
+                       labels = c("a.", "b.", "c."),
+                       label.x = 0.02,   # left padding (0 = hard left, 1 = hard right)
+                       label.y = 0.98,   # top padding (0 = bottom, 1 = top)
+                       hjust = 0, vjust = 1,
+                       legend = "bottom", 
+                       font.label = list(size = 26, color = "black", face = "plain")) )
+
+ggsave(filename = "figures/figure3_10182026.jpg", figure_3, height = 8, width = 20)
+
+### OLD BELOW ####
 
 #### COVER ~ RICHNESS ####
 # SETUP
@@ -106,6 +283,7 @@ supplemental_tables_tableS2_plot %>%
   xlab("Estimated slope") +
   geom_vline(xintercept = 0, linetype = "dashed", linewidth = 1, color = "gray") +
   ylab("") +
+  xlim(-0.01, 1.3) +
   ggtitle("a. Taxonomic richness") +
   model_themes + 
   # add letters denoting significance
@@ -132,6 +310,7 @@ supplemental_tables_tableS2_plot %>%
   xlab("Estimated slope") +
   geom_vline(xintercept = 0, linetype = "dashed", linewidth = 1, color = "gray") +
   ylab("") +
+  xlim(-0.01, 1.3) +
   ggtitle("b. Functional richness") +
   scale_y_discrete(labels = c(
     "Fringing" = "Fringing reef",
@@ -142,13 +321,13 @@ supplemental_tables_tableS2_plot %>%
   model_themes + 
  # theme(legend.position = "none") +
   # add letters denoting significance
-  geom_text(aes(x = Upper_CI + 0.10 , y = Habitat, 
+  geom_text(aes(x = Upper_CI + 0.08, y = Habitat, 
                 label = .group), colour = "black", size = 10) +
   guides(color = guide_legend(reverse = TRUE)) -> s2.functional
 
 s2_figure <- s2.taxo + s2.functional +  plot_layout(guides = "collect") &          # collect legends into one
   theme(legend.position = "bottom")  
 
-#ggsave(filename = "figures/Supp_FigS2_06252026_final.jpg", s2_figure, height = 10, width = 22)
+#ggsave(filename = "figures/Supp_FigS2_10192026_final.jpg", s2_figure, height = 10, width = 22)
 
 

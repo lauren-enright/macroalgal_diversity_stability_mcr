@@ -55,6 +55,21 @@ cld_rich_stab_mod <- multcomp::cld(em_rich_stab_mod, Letters = letters, sort = F
 #Forereef 10m               0.552 0.0401 Inf     0.474     0.631   b   
 #Forereef 17m               0.750 0.0403 Inf     0.671     0.829    c  
 
+
+rich_stab_mod2 <- glmmTMB(cover_stability~ richness_mean*habitat + (1|site_habitat), 
+                          dispformula = ~ habitat,
+                          family = Gamma(link = "log"), data = diversity_stability_synchrony)
+
+AIC(rich_stab_mod2, rich_stab_mod)
+
+anova(rich_stab_mod, rich_stab_mod2)
+
+
+plotResiduals(rich_stab_mod, form = diversity_stability_synchrony_test$habitat)
+plotResiduals(rich_stab_mod2, form = diversity_stability_synchrony_test$habitat)
+
+#better without disp
+
 #### STABILITY ~ FUNCTIONAL RICHNESS ####
   
 #random effects as site_habitat (aka site ID) instead of site (coarser LTER locations)
@@ -65,7 +80,6 @@ car::Anova(rich_stab_mod_fg)
 #functional_richness_mean         1639.776  1  < 2.2e-16 ***
 #habitat                            12.746  3    0.00522 ** 
 #functional_richness_mean:habitat   42.057  3  3.902e-09 ***
-
 
 
 performance::check_singularity(rich_stab_mod_fg) #this is not singular! 
@@ -93,6 +107,22 @@ cld_rich_stab_mod_fg <- multcomp::cld(em_rich_stab_mod_fg, Letters = letters, so
 #Forereef 10m                          0.690 0.0462 Inf     0.599     0.780   b   
 #Forereef 17m                          0.771 0.0398 Inf     0.693     0.849   b   
 
+rich_stab_mod_fg2 <- glmmTMB(cover_stability ~ functional_richness_mean*habitat + (1|site_habitat), 
+                          dispformula = ~ habitat,
+                          family = Gamma(link = "log"), data = diversity_stability_synchrony)
+
+AIC(rich_stab_mod_fg, rich_stab_mod_fg2) #delta AIC less than 4 
+
+anova(rich_stab_mod_fg, rich_stab_mod_fg2)
+
+diversity_stability_synchrony_test <- diversity_stability_synchrony %>%
+  filter(!(is.na(cover_stability)))
+
+em_rich_stab_mod_fg <- emtrends(rich_stab_mod_fg2, pairwise ~ habitat, var = "functional_richness_mean") 
+
+plotResiduals(rich_stab_mod_fg, form = diversity_stability_synchrony_test$habitat)
+plotResiduals(rich_stab_mod_fg2, form = diversity_stability_synchrony_test$habitat)
+#residuals look worse to when adding dispformula
 
 #### STABILITY ~ SYNCHRONY ####
 #random effects as site_habitat (aka site ID) instead of site (coarser LTER locations)
@@ -129,21 +159,36 @@ cld_synch_stab_mod <- multcomp::cld(em_synch_stab_mod, Letters = letters, sort =
 #Forereef 10m          -2.019 0.1340 Inf     -2.28    -1.757    c  
 #Forereef 17m          -2.500 0.1320 Inf     -2.76    -2.241    c  
 
+synch_stab_mod2 <- glmmTMB(cover_stability ~ synchrony*habitat + (1|site_habitat), 
+                           dispformula = ~ habitat,
+                           family = Gamma("log"), data = diversity_stability_synchrony)
+
+AIC(synch_stab_mod2, synch_stab_mod)
+
+anova(synch_stab_mod2, synch_stab_mod)
+
+car::Anova(synch_stab_mod2)
+
+em_synch_stab_mod2 <- emtrends(synch_stab_mod2, pairwise ~ habitat, var = "synchrony")
+cld_synch_stab_mod2 <- multcomp::cld(em_synch_stab_mod2, Letters = letters, sort = FALSE)
+
+plotResiduals(synch_stab_mod, form = diversity_stability_synchrony_test$habitat)
+plotResiduals(synch_stab_mod2, form = diversity_stability_synchrony_test$habitat)
 
 #pull out data from models to make supplemental figures:
 
 # get estimates for taxonomic richness
-t.s4.a <- as.tibble(cld_rich_stab_mod) %>%
+t.s4.a <- as_tibble(cld_rich_stab_mod) %>%
   mutate(Predictor = "Taxonomic richness") %>% 
   rename_if(str_detect(names(.), ".trend"), ~"Mean")
 
 # get estimates for fucntional richness
-t.s4.b <- as.tibble(cld_rich_stab_mod_fg) %>%
+t.s4.b <- as_tibble(cld_rich_stab_mod_fg) %>%
   mutate(Predictor = "Functional richness") %>% 
   rename_if(str_detect(names(.), ".trend"), ~"Mean")
 
 # get estimates for synchrony
-t.s4.c <- as.tibble(cld_synch_stab_mod) %>% 
+t.s4.c <- as_tibble(cld_synch_stab_mod2) %>% 
   mutate(Predictor = "Synchrony") %>% 
   rename_if(str_detect(names(.), ".trend"), ~"Mean")
 

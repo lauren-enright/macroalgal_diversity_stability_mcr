@@ -13,16 +13,69 @@ library(ggpubr)
 
 unique(alpha_diversity_site_macro$habitat)
 
+ranges_site <- alpha_diversity_site_macro_above0 %>%
+  group_by(habitat) %>%
+  summarise(rmin = min(richness), rmax = max(richness), .groups = "drop")
+
+rich_grid_site <- seq(1, max(alpha_diversity_site_macro_above0$richness), length.out = 100)
+max(alpha_diversity_site_macro_above0$richness)
+
+pred_taxo_richness_site <- emmeans(site_cover_mod5, ~ log_richness| habitat,
+                              at = list(log_richness = log(rich_grid_site)),
+                              component = "cond", type = "response") %>%
+  as.data.frame() %>%
+  mutate(taxo_richness_site = exp(log_richness)) %>%
+  left_join(ranges_site, by = "habitat") %>%
+  filter(taxo_richness_site >= rmin, taxo_richness_site <= rmax)
+
+max(pred_taxo_richness_site$rmax)
+# emmeans names the CI columns asymp.LCL/asymp.UCL or lower.CL/upper.CL
+# depending on version; standardize them
+names(pred_taxo_richness_site)[names(pred_taxo_richness_site) %in% c("asymp.LCL", "lower.CL")] <- "lcl"
+names(pred_taxo_richness_site)[names(pred_taxo_richness_site) %in% c("asymp.UCL", "upper.CL")] <- "ucl"
+
+cover_emm_site <- emmip(site_cover_mod5, habitat ~ log_richness,
+                   at = list(log_richness = 1:14),
+                   type = "response", plotit = FALSE, CIs = TRUE)
+
+
+figure_S3a2 <- ggplot() +
+  # geom_jitter(data = occ, #don't want raw data
+  #            aes(x = richness, y = cover_p * 100, colour = habitat),
+  #           width = 0.15, height = 0, alpha = 0.15, size = 1) +
+  geom_ribbon(data = pred_taxo_richness_site,
+              aes(x = taxo_richness_site, ymin = lcl, ymax = ucl,
+                  fill = habitat),
+              alpha = 0.25) +
+  geom_line(data = pred_taxo_richness_site,
+            aes(x = taxo_richness_site, y = response, colour = habitat),
+            linewidth = 1) +
+  #ylim(0.05,0.55) +
+  # facet_wrap(~ habitat, nrow = 1) +
+  scale_x_continuous(breaks = 1:max(alpha_diversity_site_macro_above0$richness)) +
+  scale_colour_manual(values = habitat_colours, labels = habitat_labels) +
+  scale_fill_manual(values = habitat_colours, labels = habitat_labels) +
+  theme_classic(base_size = 12) +
+  labs(y = "Cover", x = "Taxonomic richness", title = "") +
+  model_themes +
+  theme(axis.title.x   = element_text(size = 24,
+                                      margin = margin(t = -7)),
+        legend.position = "bottom",
+        strip.background = element_blank(),
+        strip.text = element_text(face = "bold"),
+        aspect.ratio = 1)
+
+
 
 #### Taxonomic Richness Setup ####
 
 diversity_ranges_site <- extract_ranges(alpha_diversity_site_macro, "habitat", c("richness", "functional_richness", "cover_trans"))
 
-site_cover_emm <- emmip(site_cover_mod2,
-                        habitat ~ richness,
-                        at = list(richness = seq(0,17,1)), plotit = F, CIs = T)
+site_cover_emm <- emmip(site_cover_mod5,
+                        habitat ~ log_richness,
+                        at = list(log_richness = seq(0,17,1)), plotit = F, CIs = T)
 
-filtered_site_cover_effects <- filter_ranges(site_cover_emm, diversity_ranges_site, "habitat", "richness")
+filtered_site_cover_effects <- filter_ranges(site_cover_emm, diversity_ranges_site, "habitat", "log_richness")
 
 #since we are removing raw data, need to remind R what order we want the legend in
 
@@ -51,14 +104,80 @@ filtered_site_cover_effects$habitat <- factor(filtered_site_cover_effects$habita
 # ggsave(filename = "output/figure_3d.png", figure_3d, height = 10, width = 14)
 
 
+
+
 #### Functional Richness Setup ####
 
+d_site <- alpha_diversity_site_macro_above0
+
+# Observed range of functional richness in each habitat
+ranges_site_fun <- d_site %>%
+  group_by(habitat) %>%
+  summarise(rmin = min(functional_richness), rmax = max(functional_richness), .groups = "drop")
+
+# Predictions across the observed range
+grid_fun <- seq(1, max(alpha_diversity_site_macro_above0$functional_richness), length.out = 100)
+
+pred_fun_site <- emmeans(site_cover_mod_fg6, ~ log_fun_richness | habitat,
+                         at = list(log_fun_richness = log(grid_fun)),
+                         type = "response") %>%
+  summary() %>%
+  data.frame() %>%
+  mutate(functional_richness_site = exp(log_fun_richness)) %>%
+  left_join(ranges_site_fun, by = "habitat") %>%
+  filter(log_fun_richness >= rmin, log_fun_richness <= rmax)
+
+summary(alpha_diversity_site_macro_above0$cover_trans)
+summary(pred_fun_site$response)
+
+range(pred_fun_site$functional_richness)
+range(alpha_diversity_site_macro_above0$functional_richness)
+
+# emmeans names the CI columns asymp.LCL/asymp.UCL or lower.CL/upper.CL
+# depending on version; standardize them
+names(pred_fun_site)[names(pred_fun_site) %in% c("asymp.LCL", "lower.CL")] <- "lcl"
+names(pred_fun_site)[names(pred_fun_site) %in% c("asymp.UCL", "upper.CL")] <- "ucl"
+
+fg_max_site <- max(alpha_diversity_site_macro_above0$functional_richness)
+
+site_cover_fg_emm <- emmip(site_cover_mod_fg6,     # your final model
+                           habitat ~ log_fun_richness,
+                           at = list(log_fun_richness = 1:fg_max_site),
+                           type = "response", plotit = FALSE, CIs = TRUE)
+
+figure_S3b2 <- ggplot() +
+  # geom_jitter(data = occ, #don't want raw data
+  #            aes(x = richness, y = cover_p * 100, colour = habitat),
+  #           width = 0.15, height = 0, alpha = 0.15, size = 1) +
+  geom_ribbon(data = pred_fun_site,
+              aes(x = functional_richness_site, ymin = lcl, ymax = ucl,
+                  fill = habitat),
+              alpha = 0.25) +
+  geom_line(data = pred_fun_site,
+            aes(x = functional_richness_site, y = response, colour = habitat),
+            linewidth = 1) +
+  #ylim(0.05,0.55) +
+  # facet_wrap(~ habitat, nrow = 1) +
+  scale_x_continuous(breaks = 1:max(alpha_diversity_site_macro_above0$functional_richness)) +
+  scale_colour_manual(values = habitat_colours, labels = habitat_labels) +
+  scale_fill_manual(values = habitat_colours, labels = habitat_labels) +
+  theme_classic(base_size = 12) +
+  labs(y = "Cover", x = "Functional richness", title = "") +
+  model_themes +
+  theme(axis.title.x   = element_text(size = 24,
+                                      margin = margin(t = -7)),
+        legend.position = "bottom",
+        strip.background = element_blank(),
+        strip.text = element_text(face = "bold"),
+        aspect.ratio = 1)
+
+## old 
 site_cover_fg_emm <- emmip(site_cover_mod_fg2,
                            habitat ~ functional_richness,
                            at = list(functional_richness = seq(0,17,1)), plotit = F, CIs = T)
 
 
-filtered_site_fg_cover_effects <- filter_ranges(site_cover_fg_emm, diversity_ranges_site, "habitat", "functional_richness")
+filtered_site_fg_cover_effects <- filter_ranges(site_cover_fg_emm, diversity_ranges_site, "habitat", "log_fun_richness")
 
 #since we are removing raw data, need to remind R what order we want the legend in
 
@@ -87,13 +206,13 @@ filtered_site_fg_cover_effects$habitat <- factor(filtered_site_fg_cover_effects$
 )
 #ggsave(filename = "output/figure_3e_v2.png", figure_3e, height = 10, width = 14)
 
-(figure_S3 <- ggarrange(figure_S3a, figure_S3b,  
+(figure_S3 <- ggarrange(figure_S3a2, figure_S3b2,  
                        ncol = 2, nrow = 1, 
                        common.legend = TRUE,
                        labels = c("a.", "b."),
                        legend = "bottom", 
                        font.label = list(size = 26, color = "black", face = "plain")))
 
-#ggsave(filename = "figures/Supp_FigS3_06252026_final.jpg", figure_S3, height = 10, width = 18)
+#ggsave(filename = "figures/Supp_FigS3_10202026.jpg", figure_S3, height = 10, width = 18)
 
 

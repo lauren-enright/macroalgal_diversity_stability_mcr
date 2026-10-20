@@ -76,7 +76,7 @@ filtered_rich_stab_effects_fg <- filter_ranges(rich_stab_emm_fg, dss_ranges, "ha
 
 #### STABILITY ~ SYNCHRONY ####
 # SETUP
-synch_stab_emm <- emmip(synch_stab_mod,
+synch_stab_emm <- emmip(synch_stab_mod2,
                         habitat ~ synchrony,
                         at = list(synchrony = seq(0,1,0.01)), plotit = F, CIs = T)
 

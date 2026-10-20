@@ -52,6 +52,29 @@ cld_rich_stab_mod_site <- multcomp::cld(em_rich_stab_mod_site, Letters = letters
 #Forereef 10m              0.4170 0.1300 Inf    0.1624     0.672  a    
 #Forereef 17m              0.4891 0.2040 Inf    0.0894     0.889  a    
 
+
+rich_stab_mod_site2 <- glmmTMB(cover_stability~ richness_mean*habitat, family = Gamma(link = "log"), 
+                              dispformula = ~ habitat,
+                              data = diversity_stability_synchrony_site)
+
+AIC(rich_stab_mod_site, rich_stab_mod_site2)
+
+anova(rich_stab_mod_site, rich_stab_mod_site2)
+
+car::Anova(synch_stab_mod2)
+
+em_synch_stab_mod <- emtrends(synch_stab_mod2, pairwise ~ habitat, var = "synchrony")
+
+plotResiduals(rich_stab_mod_site, form = diversity_stability_synchrony_site$habitat)
+plotResiduals(rich_stab_mod_site2, form = diversity_stability_synchrony_site$habitat)
+
+car::Anova(rich_stab_mod_site2) 
+
+library(MuMIn)
+AICc(rich_stab_mod_site, rich_stab_mod_site2)
+
+em_rich_stab_mod_site <- emtrends(rich_stab_mod_site2, pairwise ~ habitat, var = "richness_mean")
+
 #### STABILITY ~ FUNCTIONAL RICHNESS ####
 
 rich_stab_mod_site_fg <- glmmTMB(cover_stability~ functional_richness_mean*habitat, family = Gamma(link = "log"), data = diversity_stability_synchrony_site)
@@ -90,6 +113,27 @@ cld_rich_stab_mod_site_fg <- multcomp::cld(em_rich_stab_mod_site_fg, Letters = l
 #Forereef 10m                        -0.9008 0.391 Inf    -1.668    -0.134   b   
 #Forereef 17m                        -0.4491 0.356 Inf    -1.146     0.248  ab  
 
+rich_stab_mod_site_fg2 <- glmmTMB(cover_stability~ functional_richness_mean*habitat, family = Gamma(link = "log"), 
+                                  dispformula = ~ habitat,
+                                  data = diversity_stability_synchrony_site)
+
+AIC(rich_stab_mod_site_fg, rich_stab_mod_site_fg2)
+AICc(rich_stab_mod_site_fg, rich_stab_mod_site_fg2) #for small sample size, prefers NO dispersion
+
+anova(rich_stab_mod_site, rich_stab_mod_site2)
+
+car::Anova(synch_stab_mod2)
+
+em_synch_stab_mod <- emtrends(synch_stab_mod2, pairwise ~ habitat, var = "synchrony")
+
+plotResiduals(rich_stab_mod_site, form = diversity_stability_synchrony_site$habitat)
+plotResiduals(rich_stab_mod_site2, form = diversity_stability_synchrony_site$habitat)
+
+car::Anova(rich_stab_mod_site2) 
+
+
+em_rich_stab_mod_site <- emtrends(rich_stab_mod_site2, pairwise ~ habitat, var = "richness_mean")
+
 #### STABILITY ~ SYNCHRONY ####
 synch_stab_mod_site <- glmmTMB(cover_stability ~ synchrony*habitat, family = Gamma("log"), data = diversity_stability_synchrony_site)
 summary(synch_stab_mod_site)
@@ -114,6 +158,25 @@ em_synch_stab_mod_site <- emtrends(synch_stab_mod_site, pairwise ~ habitat, var 
 # Forereef 10m - Forereef 17m    1.606 1.047 Inf   1.534  0.4170
 
 cld_synch_stab_mod_site <- multcomp::cld(em_synch_stab_mod_site, Letters = letters, sort = FALSE)
+
+synch_stab_mod_site2 <- glmmTMB(cover_stability ~ synchrony*habitat, family = Gamma("log"), 
+                                dispformula = ~ habitat,
+                                data = diversity_stability_synchrony_site)
+
+AIC(synch_stab_mod_site, synch_stab_mod_site2)
+AICc(synch_stab_mod_site, synch_stab_mod_site2) #for small sample size, prefers NO dispersion
+
+anova(rich_stab_mod_site, rich_stab_mod_site2)
+
+car::Anova(synch_stab_mod2)
+
+em_synch_stab_mod <- emtrends(synch_stab_mod2, pairwise ~ habitat, var = "synchrony")
+
+plotResiduals(rich_stab_mod_site, form = diversity_stability_synchrony_site$habitat)
+plotResiduals(rich_stab_mod_site2, form = diversity_stability_synchrony_site$habitat)
+
+car::Anova(rich_stab_mod_site2) 
+
 
 #pull out data from models to make supplemental figures:
 
