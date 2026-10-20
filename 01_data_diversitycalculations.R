@@ -80,6 +80,11 @@ filter(site_habitat == "lter_5_fringing") %>%
   filter(year == 2010) %>%
   filter(prop_cover > 0)
 
+macro_functional_groups_long %>%
+  filter(site_habitat == "lter_1_fringing") %>%
+  filter(year == 2007) %>%
+  filter(prop_cover > 0)
+
 
 macro_functional_groups_long %>%
   filter(site_habitat == "lter_1_backreef") %>%
