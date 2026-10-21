@@ -50,6 +50,7 @@ figure_S3a2 <- ggplot() +
   geom_line(data = pred_taxo_richness_site,
             aes(x = taxo_richness_site, y = response, colour = habitat),
             linewidth = 1) +
+  ylim(0,0.3) +
   #ylim(0.05,0.55) +
   # facet_wrap(~ habitat, nrow = 1) +
   scale_x_continuous(breaks = 1:max(alpha_diversity_site_macro_above0$richness)) +
@@ -65,7 +66,7 @@ figure_S3a2 <- ggplot() +
         strip.text = element_text(face = "bold"),
         aspect.ratio = 1)
 
-
+figure_S3a2
 
 #### Taxonomic Richness Setup ####
 
@@ -125,7 +126,7 @@ pred_fun_site <- emmeans(site_cover_mod_fg6, ~ log_fun_richness | habitat,
   data.frame() %>%
   mutate(functional_richness_site = exp(log_fun_richness)) %>%
   left_join(ranges_site_fun, by = "habitat") %>%
-  filter(log_fun_richness >= rmin, log_fun_richness <= rmax)
+  filter(functional_richness_site >= rmin, functional_richness_site <= rmax)
 
 summary(alpha_diversity_site_macro_above0$cover_trans)
 summary(pred_fun_site$response)
@@ -156,7 +157,7 @@ figure_S3b2 <- ggplot() +
   geom_line(data = pred_fun_site,
             aes(x = functional_richness_site, y = response, colour = habitat),
             linewidth = 1) +
-  #ylim(0.05,0.55) +
+  ylim(0,0.3) +
   # facet_wrap(~ habitat, nrow = 1) +
   scale_x_continuous(breaks = 1:max(alpha_diversity_site_macro_above0$functional_richness)) +
   scale_colour_manual(values = habitat_colours, labels = habitat_labels) +
@@ -170,6 +171,8 @@ figure_S3b2 <- ggplot() +
         strip.background = element_blank(),
         strip.text = element_text(face = "bold"),
         aspect.ratio = 1)
+
+figure_S3b2
 
 ## old 
 site_cover_fg_emm <- emmip(site_cover_mod_fg2,
@@ -216,3 +219,39 @@ filtered_site_fg_cover_effects$habitat <- factor(filtered_site_fg_cover_effects$
 #ggsave(filename = "figures/Supp_FigS3_10202026.jpg", figure_S3, height = 10, width = 18)
 
 
+t.s2.a_site
+
+supplemental_tables_tableS3_plot <- t.s2.a_site %>% 
+  # rename to match previous version/code
+  dplyr::rename(Habitat = habitat,
+                Lower_CI = asymp.LCL,
+                Upper_CI = asymp.UCL)
+
+supplemental_tables_tableS3_plot %>% 
+  #filter(Table == "S2_plotlevel") %>% 
+  #filter(Predictor == "Taxonomic richness") %>% 
+  # order the habitats by distance from shore
+  mutate(Habitat = factor(Habitat, levels = c("Forereef 17m", "Forereef 10m",  "Backreef", "Fringing"))) %>% 
+  ggplot(aes(x = Mean, y = Habitat, color = Habitat)) +
+  geom_point(size = 5) +
+  # add confidence intervals:
+  geom_linerange(aes(xmin = Lower_CI, xmax = Upper_CI), linewidth = 3) +
+  scale_colour_manual(values = habitat_colours, label = habitat_labels) +
+  xlab("Estimated slope") +
+  geom_vline(xintercept = 0, linetype = "dashed", linewidth = 1, color = "gray") +
+  ylab("") +
+  #xlim(-0.05, 1.3) +
+  ggtitle("a. Site-level Taxonomic richness") +
+  model_themes + 
+  # add letters denoting significance
+  geom_text(aes(x = Upper_CI + 0.10 , y = Habitat, 
+                label = .group), colour = "black", size = 10) +
+  scale_y_discrete(labels = c(
+    "Fringing"     = "Fringing reef",
+    "Backreef"     = "Back reef",
+    "Forereef 10m" = "Fore reef 10 m",
+    "Forereef 17m" = "Forereef 17 m"
+  )) +
+  guides(color = guide_legend(reverse = TRUE)) -> s2.taxo_site
+
+s2.taxo_site

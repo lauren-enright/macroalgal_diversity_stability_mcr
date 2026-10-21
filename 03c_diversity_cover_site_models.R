@@ -67,6 +67,11 @@ performance::r2(site_cover_mod2) # marginal: 0.21, conditional: 0.58
 alpha_diversity_site_macro_above0 <- alpha_diversity_site_macro %>%
   filter(richness > 0)
 
+#lose 2 sites
+# year   site  habitat    site_habitat shannon richness prop_cover  cover_trans functional_richness
+#1 2018 lter_5 Fringing lter_5_fringing       0        0          0 1.302083e-08                   0
+#2 2023 lter_5 Fringing lter_5_fringing       0        0          0 1.302083e-08                   0
+
 str(alpha_diversity_site_macro_above0)
 
 
@@ -76,6 +81,7 @@ site_cover_mod3 <- glmmTMB(
   data        = alpha_diversity_site_macro_above0
 )
 
+car::Anova(site_cover_mod3)
 
 site_cover_mod4 <- glmmTMB(
   cover_trans ~ log(richness) * habitat + (1 | site_habitat) + (1 | year),
@@ -107,6 +113,15 @@ site_cover_mod5 <- glmmTMB(
   data        = alpha_diversity_site_macro_above0
 )
 
+site_cover_mod6 <- glmmTMB(
+  cover_trans ~ log_richness * habitat + (1 | site_habitat) + (1 | year),
+  family      = beta_family(link = "logit"),
+  data        = alpha_diversity_site_macro_above0
+)
+
+
+
+
 car::Anova(site_cover_mod5, type = "II")
 
 AIC(site_cover_mod3, site_cover_mod4, site_cover_mod5)
@@ -119,6 +134,7 @@ site_cover_mod5_lin <- update(site_cover_mod5, . ~ . - log(richness) + richness)
 AIC(site_cover_mod5, site_cover_mod5_lin)
 
 plotResiduals(simulateResiduals(site_cover_mod5),     form = alpha_diversity_site_macro_above0$richness, rank = FALSE)
+plotResiduals(simulateResiduals(site_cover_mod3), form = alpha_diversity_site_macro_above0$richness, rank = FALSE)
 plotResiduals(simulateResiduals(site_cover_mod5_lin), form = alpha_diversity_site_macro_above0$richness, rank = FALSE)
 
 site_cover_log <- glmmTMB(
@@ -169,6 +185,40 @@ AIC(site_cover_mod3, site_cover_mod2, site_cover_mod)
 anova(site_cover_mod2, site_cover_mod3)
 
 pairs(emtrends(site_cover_mod5, ~ habitat, var = "log_richness"))
+
+### running checks on oct 21 -- v good flow###
+
+d <- alpha_diversity_site_macro_above0
+
+models <- list(
+  log_disp   = site_cover_log,                             # log, habitat dispersion
+  lin_disp   = site_cover_lin,                             # linear, habitat dispersion
+  log_nodisp = update(site_cover_log, dispformula = ~ 1)   # log, constant dispersion
+)
+
+# 1. Model fit (lower is better; same data and response required)
+sapply(models, nobs)       # must all match
+sapply(models, AIC)
+
+# 2. Residuals for each model
+res <- lapply(models, simulateResiduals, n = 1000)
+
+par(mfrow = c(1, 2))
+for (nm in names(res)) { plot(res[[nm]], main = nm) }
+
+plotResiduals(res$log_disp,   form = d$habitat)
+plotResiduals(res$log_nodisp, form = d$habitat)
+
+plotResiduals(res$log_disp, form = d$richness, rank = FALSE)
+plotResiduals(res$lin_disp, form = d$richness, rank = FALSE)
+
+sapply(res, function(r) c(
+  KS_p         = testUniformity(r, plot = FALSE)$p.value,
+  dispersion   = unname(testDispersion(r, plot = FALSE)$statistic),
+  dispersion_p = testDispersion(r, plot = FALSE)$p.value
+))
+
+
 
 #### Functional Diversity ####
 
@@ -235,11 +285,19 @@ site_cover_mod_fg6 <- glmmTMB(cover_trans ~ log_fun_richness + habitat + (1|site
                               dispformula = ~ habitat,
                               family = beta_family(), data = alpha_diversity_site_macro_above0)
 
+site_cover_mod_fg7 <- glmmTMB(cover_trans ~ log_fun_richness + habitat + (1|site_habitat) + (1|year), 
+                              family = beta_family(), data = alpha_diversity_site_macro_above0)
+
 site_cover_mod_fg6 <- glmmTMB(cover_trans ~ log() + habitat + (1|site_habitat) + (1|year), 
                               dispformula = ~ habitat,
                               family = beta_family(), data = alpha_diversity_site_macro_above0)
-
 car::Anova(site_cover_mod_fg6)
+
+site_cover_mod_fg7 <- glmmTMB(cover_trans ~ functional_richness + habitat + (1|site_habitat) + (1|year), 
+                            #  dispformula = ~ habitat,
+                              family = beta_family(), data = alpha_diversity_site_macro_above0)
+
+car::Anova(site_cover_mod_fg7)
 
 plotResiduals(simulateResiduals(site_cover_mod_fg2), form = alpha_diversity_site_macro_above0$habitat)   # without
 plotResiduals(simulateResiduals(site_cover_mod_fg3), form = alpha_diversity_site_macro_above0$habitat)
@@ -259,3 +317,48 @@ dispformula = ~ habitat,
 family      = beta_family(link = "logit"),
 data        = alpha_diversity_site_macro_above0
 
+### running checks on oct 21 -- v good flow###
+
+d <- alpha_diversity_site_macro_above0
+
+models_func <- list(
+  log_disp   = site_cover_mod_fg6,                             # log, habitat dispersion
+  lin_disp   = site_cover_mod_fg7,                             # linear, habitat dispersion
+  log_nodisp = update(site_cover_mod_fg6, dispformula = ~ 1)   # log, constant dispersion
+)
+
+# 1. Model fit (lower is better; same data and response required)
+sapply(models_func, nobs)       # must all match
+sapply(models_func, AIC)
+
+# 2. Residuals for each model
+res <- lapply(models_func, simulateResiduals, n = 1000)
+
+par(mfrow = c(1, 2))
+for (nm in names(res)) { plot(res[[nm]], main = nm) }
+
+plotResiduals(res$log_disp,   form = d$habitat)
+plotResiduals(res$log_nodisp, form = d$habitat)
+
+plotResiduals(res$log_disp, form = d$functional_richness, rank = FALSE)
+plotResiduals(res$lin_disp, form = d$functional_richness, rank = FALSE)
+
+sapply(res, function(r) c(
+  KS_p         = testUniformity(r, plot = FALSE)$p.value,
+  dispersion   = unname(testDispersion(r, plot = FALSE)$statistic),
+  dispersion_p = testDispersion(r, plot = FALSE)$p.value
+))
+
+
+em_cover_mod_Site <- emtrends(site_cover_mod6, pairwise ~ habitat, var = "log_richness") 
+
+em_cover_mod_Site #yep, same as above
+
+cld_cover_mod_richness_site <- multcomp::cld(em_cover_mod_Site$emtrends, Letters = letters, sort = FALSE)
+
+
+t.s2.a_site <- as_tibble(cld_cover_mod_richness_site) %>%
+  mutate(Predictor = "Taxonomic richness",
+         `Spatial scale` = "Site-level") %>% 
+  # rename this so it matches for joining purposes
+  rename_if(str_detect(names(.), ".trend"), ~"Mean")
