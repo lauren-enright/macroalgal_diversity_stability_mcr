@@ -30,7 +30,7 @@ diversity_stability_synchrony %>% filter(is.na(cover_stability))
 (figure_4a <- 
     ggplot() +
     geom_point(data = diversity_stability_synchrony,
-               aes(x = richness_mean, y = cover_stability, colour = habitat), size = 1, alpha = 0.5) + 
+               aes(x = richness_mean, y = cover_stability, colour = habitat), linewidth = 1, alpha = 0.5) + 
     geom_line(data = filtered_rich_stab_effects, aes(x = richness_mean, y = exp(yvar), colour = habitat), size = 1.5) +
     geom_ribbon(data = filtered_rich_stab_effects, aes(x = richness_mean, ymin = exp(LCL), ymax = exp(UCL), fill = habitat),
                 alpha = 0.3) +
@@ -111,7 +111,7 @@ filtered_synch_stab_effects <- filter_ranges(synch_stab_emm, dss_ranges, "habita
                        font.label = list(size = 26, color = "black", face = "plain")))
 
 #actually going to be fig 4... 
-#ggsave(filename = "figures/figure4_06_25_2026_final.jpg", figure_4, height = 6, width = 18)
+#ggsave(filename = "figures/figure4_10272026_final.jpg", figure_4, height = 6, width = 18)
 
 # Supplemental figure S4
 
@@ -198,7 +198,7 @@ supplemental_tables_tableS4_plot %>%
 s4_figure <- s4.taxon / s4.functional / s4.synch
 
 
-#ggsave(filename = "figures/Supp_FigS4_06252026_final.jpg", height = 17, width = 14)
+#ggsave(filename = "figures/Supp_FigS4_10272026_final.jpg", s4_figure, height = 17, width = 14)
 #if you make it narrower than 14 it cuts off the legend
 
 

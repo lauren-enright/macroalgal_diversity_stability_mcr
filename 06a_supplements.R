@@ -15,6 +15,12 @@ library(here)
 
 macro_functional_groups_long <- read.csv(here::here("data", "macroalgalfunctionalgroups_long_09262025.csv"), stringsAsFactors = F)
 
+#making sure all taxa carried over
+macro_functional_groups_long %>%
+  count(site, location, year, habitat) %>%
+  distinct(n)
+#yes, n = 63
+
 #### Figure S1: Clock Circle Absolute Abundance Figure ####
 # set colors and labels. these will not be used in any other figures
 
@@ -26,11 +32,13 @@ colors_abundance <- c(
   "lobophora_variegata" = "#BF812D",
   #"dictyota_bartayresiana" =  "#BF812D",
   "dictyota_bartayresiana" = "#DFC27D",
-  "peyssonnelia_inamoena" = "#E6B88A",
+  "peyssonnelia_bornetii" = "#E6B88A",
+  "peyssonnelia_inamoena" = "#EED0A7",
   "peyssonnelia_sp" = "#F6E8C3",
-  "halimeda_sp" = "#C7EAE5",
-  "halimeda_minima" = "#80CDC1" ,
-  "halimeda_opuntia" = "#35978F",
+  "halimeda_discoidea" = "#C7EAE5",
+  "halimeda_minima" = "#A4DCD3",
+  "halimeda_opuntia" = "#80CDC1",
+  "halimeda_sp" = "#35978F",
   "amansia_rhodantha" = "#01665E", 
   "asparagopsis_taxiformis" = "#003C30",
   "Other" = "grey70")
@@ -57,10 +65,12 @@ labs_fill <- list(
   "lobophora_variegata" =  expression(italic("Lobophora") ~ "spp."),
   "dictyota_bartayresiana" = expression(italic("Dictyota bartayresiana")),
   "peyssonnelia_inamoena"  = expression(italic("Peyssonnelia inamoena")),
+  "peyssonnelia_bornetii"  = expression(italic("Peyssonnelia bornetii")),
   "peyssonnelia_sp" = expression(italic("Peyssonnelia") ~ "spp."),
   # "peyssonnelia_sp"        = expression(italic("Peyssonnelia sp.")),
   "halimeda_sp" = expression(italic("Halimeda") ~ "spp."),
   "halimeda_minima"        = expression(italic("Halimeda minima")),
+  "halimeda_discoidea"        = expression(italic("Halimeda discoidea")),
   "halimeda_opuntia"       = expression(italic("Halimeda opuntia")),
   "amansia_rhodantha"      = expression(italic("Amansia rhodantha")),
   "asparagopsis_taxiformis"= expression(italic("Asparagopsis taxiformis"))
@@ -71,13 +81,15 @@ labs_fill <- list(
 focal_taxa <- c(
   "sargassum_pacificum",
   "turbinaria_ornata",
+  "lobophora_variegata",
   "dictyota_bartayresiana",
+  "peyssonnelia_bornetii",
   "peyssonnelia_inamoena",
   "peyssonnelia_sp",
+  "halimeda_discoidea",
   "halimeda_minima",
-  "halimeda_sp",
-  "lobophora_variegata",
   "halimeda_opuntia",
+  "halimeda_sp",
   "amansia_rhodantha",
   "asparagopsis_taxiformis"
 )
@@ -107,6 +119,9 @@ aggdat_hab_other <- macro_functional_groups_long %>%
       levels = c("Fringing", "Backreef", "Forereef 10m", "Forereef 17m")
     )
   )
+
+
+#### Plotting Figure S1 #### 
 
 aggdat_hab_other$habitat <- factor(aggdat_hab_other$habitat, levels = c("Fringing", "Backreef", "Forereef 10m", "Forereef 17m"))
 
@@ -148,6 +163,5 @@ y_max  <- max(aggdat_hab_other$prop_cover, na.rm = TRUE)
       axis.text.x = element_text(size = 22, angle = 45, hjust = 1)
     ))
 
-#ggsave(filename = "figures/Supp_FigS1_06252026_final2.jpg", aggdat_hab_supp_bar, height = 15, width = 20)
-
+#ggsave(filename = "figures/Supp_FigS1_10272026_final3.jpg", aggdat_hab_supp_bar, height = 15, width = 20)
 

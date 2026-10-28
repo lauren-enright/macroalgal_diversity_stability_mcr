@@ -11,7 +11,7 @@ library(here)
 source("00_functions_and_aes.R")
 #source("04a_calculate_synchrony.R")
 
-#read in data produced in 04a_calculate_synchrony script
+#### Read in data produced in 04a_calculate_synchrony script #### 
 diversity_stability_synchrony <- read.csv(here::here("data", "full_plot_level_dss_09262025.csv")) 
 diversity_stability_synchrony_site <- read.csv(here::here("data", "diversity_stability_synchrony_site_09262025.csv"))
 
@@ -26,7 +26,7 @@ diversity_stability_synchrony$habitat <- factor(diversity_stability_synchrony$ha
 # EXTRACT RANGES
 dss_ranges <- extract_ranges(diversity_stability_synchrony, "habitat",
                              c("richness_mean", "functional_richness_mean", "cover_stability", "synchrony"))
-
+  
 
 #### STABILITY ~ RICHNESS ####
 #random effects as site_habitat (aka site ID) instead of site (coarser LTER locations)
@@ -34,8 +34,12 @@ rich_stab_mod <- glmmTMB(cover_stability~ richness_mean*habitat + (1|site_habita
 performance::check_singularity(rich_stab_mod)
 # (1|site/site_habitat) --> singular
 # (1|site_habitat) --> ok 
+
+performance::check_model(rich_stab_mod)
+#looks good
+
 summary(rich_stab_mod)
-car::Anova(rich_stab_mod)
+car::Anova(rich_stab_mod, type = "II")
 #Response: cover_stability
 #Chisq Df Pr(>Chisq)    
 #richness_mean         1427.967  1  < 2.2e-16 ***
@@ -44,7 +48,6 @@ car::Anova(rich_stab_mod)
 performance::r2(rich_stab_mod) 
 # Conditional R2: 0.840
 #Marginal R2: 0.793
-performance::check_model(rich_stab_mod)
 
 em_rich_stab_mod <- emtrends(rich_stab_mod, pairwise ~ habitat, var = "richness_mean")
 cld_rich_stab_mod <- multcomp::cld(em_rich_stab_mod, Letters = letters, sort = FALSE)
@@ -56,24 +59,22 @@ cld_rich_stab_mod <- multcomp::cld(em_rich_stab_mod, Letters = letters, sort = F
 #Forereef 17m               0.750 0.0403 Inf     0.671     0.829    c  
 
 
+## quickly checking to make sure dispformula = ~ habitat doesn't improve the model ##
+
 rich_stab_mod2 <- glmmTMB(cover_stability~ richness_mean*habitat + (1|site_habitat), 
                           dispformula = ~ habitat,
                           family = Gamma(link = "log"), data = diversity_stability_synchrony)
 
-AIC(rich_stab_mod2, rich_stab_mod)
+AICc(rich_stab_mod2, rich_stab_mod)
+#nope 
+#using model with normal dispersion
 
-anova(rich_stab_mod, rich_stab_mod2)
-
-
-plotResiduals(rich_stab_mod, form = diversity_stability_synchrony_test$habitat)
-plotResiduals(rich_stab_mod2, form = diversity_stability_synchrony_test$habitat)
-
-#better without disp
 
 #### STABILITY ~ FUNCTIONAL RICHNESS ####
   
 #random effects as site_habitat (aka site ID) instead of site (coarser LTER locations)
-rich_stab_mod_fg <- glmmTMB(cover_stability ~ functional_richness_mean*habitat + (1|site_habitat), family = Gamma(link = "log"), data = diversity_stability_synchrony)
+rich_stab_mod_fg <- glmmTMB(cover_stability ~ functional_richness_mean*habitat + (1|site_habitat), family = Gamma(link = "log"), 
+                            data = diversity_stability_synchrony)
 car::Anova(rich_stab_mod_fg)
 #Response: cover_stability
 #Chisq Df Pr(>Chisq)    
@@ -107,29 +108,28 @@ cld_rich_stab_mod_fg <- multcomp::cld(em_rich_stab_mod_fg, Letters = letters, so
 #Forereef 10m                          0.690 0.0462 Inf     0.599     0.780   b   
 #Forereef 17m                          0.771 0.0398 Inf     0.693     0.849   b   
 
+
+## quickly checking to make sure dispformula = ~ habitat doesn't improve the model ##
+
 rich_stab_mod_fg2 <- glmmTMB(cover_stability ~ functional_richness_mean*habitat + (1|site_habitat), 
                           dispformula = ~ habitat,
                           family = Gamma(link = "log"), data = diversity_stability_synchrony)
 
 AIC(rich_stab_mod_fg, rich_stab_mod_fg2) #delta AIC less than 4 
-
-anova(rich_stab_mod_fg, rich_stab_mod_fg2)
-
-diversity_stability_synchrony_test <- diversity_stability_synchrony %>%
-  filter(!(is.na(cover_stability)))
-
-em_rich_stab_mod_fg <- emtrends(rich_stab_mod_fg2, pairwise ~ habitat, var = "functional_richness_mean") 
+#weak evidence 
 
 plotResiduals(rich_stab_mod_fg, form = diversity_stability_synchrony_test$habitat)
+plotResiduals(rich_stab_mod_fg, form = diversity_stability_synchrony_test$functional_richness_mean)
 plotResiduals(rich_stab_mod_fg2, form = diversity_stability_synchrony_test$habitat)
 #residuals look worse to when adding dispformula
+
 
 #### STABILITY ~ SYNCHRONY ####
 #random effects as site_habitat (aka site ID) instead of site (coarser LTER locations)
 synch_stab_mod <- glmmTMB(cover_stability ~ synchrony*habitat + (1|site_habitat), family = Gamma("log"), data = diversity_stability_synchrony)
 performance::check_singularity(synch_stab_mod) #false
 
-performance::check_model(synch_stab_mod)
+performance::check_model(synch_stab_mod) 
 summary(synch_stab_mod)
 car::Anova(synch_stab_mod)
 #                      Chisq Df Pr(>Chisq)    
@@ -163,17 +163,26 @@ synch_stab_mod2 <- glmmTMB(cover_stability ~ synchrony*habitat + (1|site_habitat
                            dispformula = ~ habitat,
                            family = Gamma("log"), data = diversity_stability_synchrony)
 
-AIC(synch_stab_mod2, synch_stab_mod)
+AIC(synch_stab_mod2, synch_stab_mod) #yes, synch stab mod greatly improves model... 
 
-anova(synch_stab_mod2, synch_stab_mod)
-
-car::Anova(synch_stab_mod2)
+car::Anova(synch_stab_mod2, type = "II")
+#                      Chisq Df Pr(>Chisq)    
+#synchrony         1156.2994  1     <2e-16 ***
+#habitat              5.9207  3     0.1155    
+#synchrony:habitat  174.4151  3     <2e-16 ***
 
 em_synch_stab_mod2 <- emtrends(synch_stab_mod2, pairwise ~ habitat, var = "synchrony")
 cld_synch_stab_mod2 <- multcomp::cld(em_synch_stab_mod2, Letters = letters, sort = FALSE)
+# habitat      synchrony.trend     SE  df asymp.LCL asymp.UCL .group
+#Fringing              -0.897 0.0661 Inf     -1.03    -0.767  a    
+#Backreef              -1.311 0.0695 Inf     -1.45    -1.174   b   
+#Forereef 10m          -2.018 0.1030 Inf     -2.22    -1.816    c  
+#Forereef 17m          -2.498 0.1240 Inf     -2.74    -2.255     d 
+
 
 plotResiduals(synch_stab_mod, form = diversity_stability_synchrony_test$habitat)
 plotResiduals(synch_stab_mod2, form = diversity_stability_synchrony_test$habitat)
+#nice -- within-group devition from uniformity is non significant w/ dispformula = ~ habitat,
 
 #pull out data from models to make supplemental figures:
 
@@ -192,6 +201,7 @@ t.s4.c <- as_tibble(cld_synch_stab_mod2) %>%
   mutate(Predictor = "Synchrony") %>% 
   rename_if(str_detect(names(.), ".trend"), ~"Mean")
 
+#bind together
 rbind(t.s4.a, t.s4.b, t.s4.c) %>% 
   mutate(`Spatial scale` = "Plot-level", 
          Table = "S4") %>% 
