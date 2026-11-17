@@ -15,6 +15,8 @@ alpha_diversity_site_macro_above0 <- alpha_diversity_site_macro %>%
 alpha_diversity_site_macro_above0$habitat <- factor(alpha_diversity_site_macro_above0$habitat,
                                                      levels = c("Fringing", "Backreef", "Forereef 10m", "Forereef 17m"))
 
+unique(alpha_diversity_site_macro_above0$site_habitat)  #24, this is our site-level random effect
+
 cor(alpha_diversity_site_macro_above0$richness, alpha_diversity_site_macro_above0$functional_richness) #0.73 
 
 
@@ -36,6 +38,10 @@ summary(site_cover_mod)
 res_taxo_lin_site <- simulateResiduals(site_cover_mod, n = 1000)
 plotResiduals(res_taxo_lin_site, form = alpha_diversity_site_macro_above0$richness, rank = FALSE)
 #humped shaped 
+#this model sometimes throws a warning
+#In (function (start, objective, gradient = NULL, hessian = NULL,  : NA/NaN function evaluation
+#if choosing this model, would need to carefuly check that final fit is ok 
+#If pdHess is TRUE, the standard errors look reasonable and diagnose() reports no problems, can generally treat the fit as fine.
 
 #####  M2: interaction, no log transformation of richness, yes dispformula = habitat #####  
 
@@ -69,6 +75,7 @@ site_cover_mod4 <- glmmTMB(
   family      = beta_family(link = "logit"),
   data        = alpha_diversity_site_macro_above0
 )
+#no warning
 
 res_taxo_log_site_m4 <- simulateResiduals(site_cover_mod4, n = 1000)
 plotResiduals(res_taxo_log_site_m4, form = alpha_diversity_site_macro_above0$richness, rank = FALSE)
@@ -114,7 +121,7 @@ hist(residuals(site_cover_mod4), breaks = 25)
 testOutliers(site_cover_mod4, type = "bootstrap") #no outlier problems!
 testOutliers(site_cover_mod4) ##no outlier problems!
 
-#### Anova and PostHoc for Best Model ####
+##### Anova and PostHoc for Best Model #####
 
 car::Anova(site_cover_mod4, type = "II")
 #                        Chisq Df Pr(>Chisq)    
@@ -247,5 +254,5 @@ car::Anova(site_cover_mod_fg5, type = "II")
 
 em_cover_mod_disp_fg <- emtrends(site_cover_mod_fg5, pairwise ~ habitat, var = "log_fun_site") 
 cld_cover_mod_disp_fg <- multcomp::cld(em_cover_mod_disp_fg$emtrends, Letters = letters, sort = FALSE)
-#yep -- all the same letter 
+#yep -- all the same letter (makes sense since habitat is not significant)
 

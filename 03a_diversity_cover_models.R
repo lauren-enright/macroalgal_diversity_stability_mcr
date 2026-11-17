@@ -20,6 +20,7 @@ alpha_diversity_quad_macro <- read.csv(here::here("data", "alpha_diversity_quad_
 #alpha_diversity_site_macro <- read.csv(here::here("data", "alpha_diversity_site_macro.csv"))
 
 unique(alpha_diversity_quad_macro$habitat)
+unique(alpha_diversity_quad_macro$site_habitat) #24, this is our site-level random effect
 
 #### Remove plots with 0s and log data ####
 
@@ -56,7 +57,7 @@ taxo_richness_cover_m1 <- glmmTMB(
   data        = alpha_diversity_quad_macro_present
 )
 
-performance::check_model(taxo_richness_cover_m1)
+
 ##### M2: interaction, no log transformation of richness, yes dispformula = habitat #####
 #adding disformula = cover be more variable in some habitats than others 
 
@@ -98,6 +99,8 @@ taxo_richness_cover_m4 <- glmmTMB(
   family      = beta_family(link = "logit"),
   data        = alpha_diversity_quad_macro_present
 )
+
+unique(alpha_diversity_quad_macro_present$site_habitat)
 
 ##### Let's see which model is best #####
 AIC(taxo_richness_cover_m1, taxo_richness_cover_m2, taxo_richness_cover_m3, taxo_richness_cover_m4)
@@ -144,7 +147,7 @@ testOutliers(res_taxo_log, type = "bootstrap")
 
 testDispersion(recalculateResiduals(res_taxo_log, group = interaction(alpha_diversity_quad_macro_present$site_habitat, alpha_diversity_quad_macro_present$location)))
 
-#### Anova and PostHoc for Best Model ####
+##### Anova and PostHoc for Best Model #####
 car::Anova(taxo_richness_cover_m4, type = "II")
 #Chisq Df Pr(>Chisq)    
 #log_rich         4236.3045  1    < 2e-16 ***
@@ -264,7 +267,7 @@ hist(residuals(functional_richness_cover_m4), breaks = 25)
 testOutliers(model_occ_log_fun, type = "bootstrap")
 
 
-#### Anova and PostHoc for Best Model ####
+##### Anova and PostHoc for Best Model #####
 car::Anova(functional_richness_cover_m4, type = "II")
 #Chisq Df Pr(>Chisq)    
 #log_fun         3231.6259  1  < 2.2e-16 ***
@@ -296,8 +299,6 @@ cld_cover_mod_fg <- multcomp::cld(em_cover_mod_fg$emtrends, Letters = letters, s
 
 
 #### Data wrangling from models to make supplemental figures: ####
-
-#don't need to pull out anything from presence model, since Figure 3a plots the model output
 
 #richness by cover
 

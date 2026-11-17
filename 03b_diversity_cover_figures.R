@@ -12,7 +12,7 @@ library(patchwork)
 library(ggpubr)
 
 
-diversity_ranges_quad <- extract_ranges(alpha_diversity_quad_macro_no0s, "habitat", c("richness", "cover_trans_no0s", "functional_richness"))
+diversity_ranges_quad <- extract_ranges(alpha_diversity_quad_macro_present, "habitat", c("richness", "cover_trans_no0s", "functional_richness"))
 
 #### Figure 3A: COVER ~ RICHNESS ####
 # SETUP

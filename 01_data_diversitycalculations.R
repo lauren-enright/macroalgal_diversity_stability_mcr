@@ -27,7 +27,7 @@ unique(macro_functional_groups_long$functional_group)
 #8 functional groups
 
 macro_functional_groups_long %>%
-  select(taxa, functional_group) %>%
+  dplyr::select(taxa, functional_group) %>%
   distinct()
 
 #63 taxa! 

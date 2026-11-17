@@ -182,7 +182,7 @@ supplemental_tableS6 %>%
   # add confidence intervals:
   geom_linerange(aes(xmin = Lower_CI, xmax = Upper_CI), linewidth = 2.5) +
   scale_colour_manual(values = habitat_colours, label = habitat_labels) +
-  xlab("Estimated Mean") +
+  xlab("Estimated mean") +
   ylab("") +
   ggtitle("b. Spatial synchrony") +
   model_themes + 
@@ -201,5 +201,5 @@ supplement_S6 <- s6.a + s6.b +
   plot_layout(guides = "collect") &
   theme(legend.position = "bottom")
 
-#ggsave(filename = "figures/Supp_FigS6_06252026_final.jpg", supplement_S6, height = 10, width = 20)
+#ggsave(filename = "figures/Supp_FigS6_11172026_final.jpg", supplement_S6, height = 10, width = 20)
 

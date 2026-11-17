@@ -26,7 +26,8 @@ diversity_stability_synchrony$habitat <- factor(diversity_stability_synchrony$ha
 # EXTRACT RANGES
 dss_ranges <- extract_ranges(diversity_stability_synchrony, "habitat",
                              c("richness_mean", "functional_richness_mean", "cover_stability", "synchrony"))
-  
+
+unique(diversity_stability_synchrony$site_habitat)  #24, this is our site-level random effect
 
 #### STABILITY ~ RICHNESS ####
 #random effects as site_habitat (aka site ID) instead of site (coarser LTER locations)
@@ -115,13 +116,13 @@ rich_stab_mod_fg2 <- glmmTMB(cover_stability ~ functional_richness_mean*habitat 
                           dispformula = ~ habitat,
                           family = Gamma(link = "log"), data = diversity_stability_synchrony)
 
-AIC(rich_stab_mod_fg, rich_stab_mod_fg2) #delta AIC less than 4 
-#weak evidence 
+AIC(rich_stab_mod_fg, rich_stab_mod_fg2) 
+#weak evidence, using simpler model!  
 
 plotResiduals(rich_stab_mod_fg, form = diversity_stability_synchrony_test$habitat)
 plotResiduals(rich_stab_mod_fg, form = diversity_stability_synchrony_test$functional_richness_mean)
 plotResiduals(rich_stab_mod_fg2, form = diversity_stability_synchrony_test$habitat)
-#residuals look worse to when adding dispformula
+#residuals look worse to when adding dispformula, more evidence to use simpler model! 
 
 
 #### STABILITY ~ SYNCHRONY ####
@@ -172,6 +173,15 @@ car::Anova(synch_stab_mod2, type = "II")
 #synchrony:habitat  174.4151  3     <2e-16 ***
 
 em_synch_stab_mod2 <- emtrends(synch_stab_mod2, pairwise ~ habitat, var = "synchrony")
+#$contrasts
+#contrast                    estimate     SE  df z.ratio p.value
+#Fringing - Backreef            0.414 0.0959 Inf   4.317 <0.0001
+#Fringing - Forereef 10m        1.121 0.1220 Inf   9.179 <0.0001
+#Fringing - Forereef 17m        1.601 0.1400 Inf  11.407 <0.0001
+#Backreef - Forereef 10m        0.707 0.1240 Inf   5.703 <0.0001
+#Backreef - Forereef 17m        1.187 0.1420 Inf   8.361 <0.0001
+#Forereef 10m - Forereef 17m    0.480 0.1610 Inf   2.984  0.0151
+
 cld_synch_stab_mod2 <- multcomp::cld(em_synch_stab_mod2, Letters = letters, sort = FALSE)
 # habitat      synchrony.trend     SE  df asymp.LCL asymp.UCL .group
 #Fringing              -0.897 0.0661 Inf     -1.03    -0.767  a    
