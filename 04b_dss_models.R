@@ -29,9 +29,14 @@ dss_ranges <- extract_ranges(diversity_stability_synchrony, "habitat",
 
 unique(diversity_stability_synchrony$site_habitat)  #24, this is our site-level random effect
 
+#removing 16 plots that never had macroalgae in them and therefore cannot have a stability metric
+diversity_stability_synchrony_noNAs <- diversity_stability_synchrony %>%
+  filter(!is.na(cover_stability))
+
+
 #### STABILITY ~ RICHNESS ####
 #random effects as site_habitat (aka site ID) instead of site (coarser LTER locations)
-rich_stab_mod <- glmmTMB(cover_stability~ richness_mean*habitat + (1|site_habitat), family = Gamma(link = "log"), data = diversity_stability_synchrony)
+rich_stab_mod <- glmmTMB(cover_stability~ richness_mean*habitat + (1|site_habitat), family = Gamma(link = "log"), data = diversity_stability_synchrony_noNAs)
 performance::check_singularity(rich_stab_mod)
 # (1|site/site_habitat) --> singular
 # (1|site_habitat) --> ok 
@@ -64,7 +69,7 @@ cld_rich_stab_mod <- multcomp::cld(em_rich_stab_mod, Letters = letters, sort = F
 
 rich_stab_mod2 <- glmmTMB(cover_stability~ richness_mean*habitat + (1|site_habitat), 
                           dispformula = ~ habitat,
-                          family = Gamma(link = "log"), data = diversity_stability_synchrony)
+                          family = Gamma(link = "log"), data = diversity_stability_synchrony_noNAs)
 
 AICc(rich_stab_mod2, rich_stab_mod)
 #nope 
@@ -75,7 +80,7 @@ AICc(rich_stab_mod2, rich_stab_mod)
   
 #random effects as site_habitat (aka site ID) instead of site (coarser LTER locations)
 rich_stab_mod_fg <- glmmTMB(cover_stability ~ functional_richness_mean*habitat + (1|site_habitat), family = Gamma(link = "log"), 
-                            data = diversity_stability_synchrony)
+                            data = diversity_stability_synchrony_noNAs)
 car::Anova(rich_stab_mod_fg)
 #Response: cover_stability
 #Chisq Df Pr(>Chisq)    
@@ -114,20 +119,20 @@ cld_rich_stab_mod_fg <- multcomp::cld(em_rich_stab_mod_fg, Letters = letters, so
 
 rich_stab_mod_fg2 <- glmmTMB(cover_stability ~ functional_richness_mean*habitat + (1|site_habitat), 
                           dispformula = ~ habitat,
-                          family = Gamma(link = "log"), data = diversity_stability_synchrony)
+                          family = Gamma(link = "log"), data = diversity_stability_synchrony_noNAs)
 
 AIC(rich_stab_mod_fg, rich_stab_mod_fg2) 
 #weak evidence, using simpler model!  
 
-plotResiduals(rich_stab_mod_fg, form = diversity_stability_synchrony_test$habitat)
-plotResiduals(rich_stab_mod_fg, form = diversity_stability_synchrony_test$functional_richness_mean)
-plotResiduals(rich_stab_mod_fg2, form = diversity_stability_synchrony_test$habitat)
+plotResiduals(rich_stab_mod_fg, form = diversity_stability_synchrony_noNAs$habitat)
+plotResiduals(rich_stab_mod_fg, form = diversity_stability_synchrony_noNAs$functional_richness_mean)
+plotResiduals(rich_stab_mod_fg2, form = diversity_stability_synchrony_noNAs$habitat)
 #residuals look worse to when adding dispformula, more evidence to use simpler model! 
 
 
 #### STABILITY ~ SYNCHRONY ####
 #random effects as site_habitat (aka site ID) instead of site (coarser LTER locations)
-synch_stab_mod <- glmmTMB(cover_stability ~ synchrony*habitat + (1|site_habitat), family = Gamma("log"), data = diversity_stability_synchrony)
+synch_stab_mod <- glmmTMB(cover_stability ~ synchrony*habitat + (1|site_habitat), family = Gamma("log"), data = diversity_stability_synchrony_noNAs)
 performance::check_singularity(synch_stab_mod) #false
 
 performance::check_model(synch_stab_mod) 
@@ -162,9 +167,9 @@ cld_synch_stab_mod <- multcomp::cld(em_synch_stab_mod, Letters = letters, sort =
 
 synch_stab_mod2 <- glmmTMB(cover_stability ~ synchrony*habitat + (1|site_habitat), 
                            dispformula = ~ habitat,
-                           family = Gamma("log"), data = diversity_stability_synchrony)
+                           family = Gamma("log"), data = diversity_stability_synchrony_noNAs)
 
-AIC(synch_stab_mod2, synch_stab_mod) #yes, synch stab mod greatly improves model... 
+AIC(synch_stab_mod2, synch_stab_mod) #yes,   dispformula = ~ habitat, greatly improves model... 
 
 car::Anova(synch_stab_mod2, type = "II")
 #                      Chisq Df Pr(>Chisq)    
@@ -190,8 +195,8 @@ cld_synch_stab_mod2 <- multcomp::cld(em_synch_stab_mod2, Letters = letters, sort
 #Forereef 17m          -2.498 0.1240 Inf     -2.74    -2.255     d 
 
 
-plotResiduals(synch_stab_mod, form = diversity_stability_synchrony_test$habitat)
-plotResiduals(synch_stab_mod2, form = diversity_stability_synchrony_test$habitat)
+plotResiduals(synch_stab_mod, form = diversity_stability_synchrony_noNAs$habitat)
+plotResiduals(synch_stab_mod2, form = diversity_stability_synchrony_noNAs$habitat)
 #nice -- within-group devition from uniformity is non significant w/ dispformula = ~ habitat,
 
 #pull out data from models to make supplemental figures:

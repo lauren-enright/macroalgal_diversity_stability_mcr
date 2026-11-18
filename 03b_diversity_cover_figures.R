@@ -135,7 +135,7 @@ pfigure_3b <- Figure3b + theme(plot.margin = margin(10, 10, 10, 10))
                        legend = "bottom", 
                        font.label = list(size = 26, color = "black", face = "plain")) )
 
-ggsave(filename = "figures/figure3_10272026.jpg", figure_3, height = 8, width = 16)
+#ggsave(filename = "figures/figure3_10272026.jpg", figure_3, height = 8, width = 16)
 
 
 #### FIGURE S2   #### 
@@ -204,6 +204,6 @@ supplemental_tables_tableS2_plot %>%
 s2_figure <- s2.taxo + s2.functional +  plot_layout(guides = "collect") &          # collect legends into one
   theme(legend.position = "bottom")  
 
-ggsave(filename = "figures/Supp_FigS2_10272026_final.jpg", s2_figure, height = 10, width = 22)
+#ggsave(filename = "figures/Supp_FigS2_10272026_final.jpg", s2_figure, height = 10, width = 22)
 
 
