@@ -114,12 +114,11 @@ AIC(taxo_richness_cover_m1, taxo_richness_cover_m2, taxo_richness_cover_m3, taxo
 #taxo_richness_cover_m4 (logged with habitat dispersion is best!)
 
 #R2 does not work with dispersion sub model (disp habitat) 
-MuMIn::r.squaredGLMM(model_occ_log_taxo)
-summary(model_occ_log_taxo)
-performance::r2_nakagawa(model_occ_log_taxo)
-performance::model_performance(model_occ_log_taxo)
+MuMIn::r.squaredGLMM(taxo_richness_cover_m4) #many warnings
+performance::r2_nakagawa(taxo_richness_cover_m4) # many warnings
 
 ##### checks for best model (taxo_richness_cover_m4):##### 
+summary(taxo_richness_cover_m4)
 taxo_richness_cover_m4$fit$convergence           # should be 0 - yes
 taxo_richness_cover_m4$sdr$pdHess #TRUE
 diagnose(taxo_richness_cover_m4) #Unusually large Z-statistics, but ok 
@@ -260,12 +259,10 @@ plotResiduals(res_taxo_log_fun, form = alpha_diversity_quad_macro_present$habita
 
 testDispersion(res_taxo_log_fun)  #slightly high but ok?  #make sure to run this on the residuals
 
-
 hist(residuals(functional_richness_cover_m4))
 hist(residuals(functional_richness_cover_m4), breaks = 25)
 
-testOutliers(model_occ_log_fun, type = "bootstrap")
-
+testOutliers(functional_richness_cover_m4, type = "bootstrap")
 
 ##### Anova and PostHoc for Best Model #####
 car::Anova(functional_richness_cover_m4, type = "II")
@@ -290,8 +287,6 @@ pairs(emtrends(functional_richness_cover_m4, ~ habitat, var = "log_fun"))
 
 
 em_cover_mod_fg <- emtrends(functional_richness_cover_m4, pairwise ~ habitat, var = "log_fun") 
-
-pairs(em_cover_mod_fg)
 #yep, same as other way
 
 #need this for plotting Figure S2
